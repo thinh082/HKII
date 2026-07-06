@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bản đồ View HTTPGet</title>
+  <link rel="stylesheet" href="../../../HisSoft/wwwroot/dist/css/CSS0601/tom-select.bootstrap5.min.css">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -33,6 +34,10 @@
         <button class="nav-item" type="button" data-view="db">
           <span class="nav-kicker">Database</span>
           <span class="nav-label">Cấu trúc DB</span>
+        </button>
+        <button class="nav-item" type="button" data-view="sql">
+          <span class="nav-kicker">Query</span>
+          <span class="nav-label">Tạo câu lệnh SQL</span>
         </button>
         <button class="nav-item" type="button" data-view="controllers">
           <span class="nav-kicker">Danh mục</span>
@@ -216,6 +221,120 @@
         </section>
       </section>
 
+      <section class="content-panel" data-panel="sql">
+        <section class="toolbar sql-toolbar">
+          <label class="select-box">
+            <span>Bảng gốc</span>
+            <select id="sqlBaseTableSelect"></select>
+          </label>
+
+          <label class="select-box">
+            <span>Thêm bảng join</span>
+            <select id="sqlJoinTableSelect"></select>
+          </label>
+
+          <div class="sql-toolbar-actions">
+            <button class="ghost-btn" id="sqlResetButton" type="button">Reset builder</button>
+          </div>
+        </section>
+
+        <section class="sql-builder-grid">
+          <div class="browser-panel sql-table-panel">
+            <div class="panel-box-head">
+              <div>
+                <p class="panel-box-kicker">Join</p>
+                <h3>Bảng đã chọn join</h3>
+                <p class="detail-intro">Search tên bảng, nhấn Enter để thêm nhanh vào query.</p>
+              </div>
+              <div class="mini-stats" id="sqlMiniStats"></div>
+            </div>
+
+            <section class="summary" id="sqlJoinSummary"></section>
+            <div class="sql-join-suggestion-list" id="sqlJoinSuggestionList"></div>
+            <div class="sql-selected-join-list" id="sqlSelectedJoinList"></div>
+          </div>
+
+          <div class="detail-panel sql-detail-panel">
+            <div class="detail-head">
+              <div>
+                <p class="panel-box-kicker">Select builder</p>
+                <h3 id="sqlPanelTitle">Tạo câu lệnh SELECT</h3>
+                <p class="detail-intro" id="sqlPanelIntro">Tick cột cần lấy, thêm where và copy câu SQL cuối.</p>
+              </div>
+            </div>
+
+            <div class="sql-detail-grid">
+              <section class="sql-section">
+                <div class="sql-section-head">
+                  <div>
+                    <p class="panel-box-kicker">Bước 1</p>
+                    <h4>Chọn cột từ bảng gốc</h4>
+                  </div>
+                  <div class="sql-section-actions">
+                    <button class="ghost-btn" id="sqlSelectBaseColumnsButton" type="button">Chọn hết bảng gốc</button>
+                    <button class="ghost-btn" id="sqlClearBaseColumnsButton" type="button">Bỏ cột bảng gốc</button>
+                  </div>
+                </div>
+                <div class="sql-column-picker" id="sqlBaseColumnsWrap"></div>
+              </section>
+
+              <section class="sql-section">
+                <div class="sql-section-head">
+                  <div>
+                    <p class="panel-box-kicker">Bước 2 - 4</p>
+                    <h4>Chọn bảng join, cột và kiểu join</h4>
+                  </div>
+                </div>
+                <div class="sql-join-config-list" id="sqlJoinConfigList"></div>
+              </section>
+
+              <section class="sql-section">
+                <div class="sql-section-head">
+                  <div>
+                    <p class="panel-box-kicker">Bước 5</p>
+                    <h4>Có / không điều kiện</h4>
+                  </div>
+                  <div class="sql-section-actions">
+                    <button class="ghost-btn" id="sqlAddWhereButton" type="button">Thêm điều kiện</button>
+                  </div>
+                </div>
+                <div class="sql-condition-toggle">
+                  <label class="sql-toggle-pill">
+                    <input id="sqlConditionOff" name="sqlConditionMode" type="radio" value="off">
+                    <span>Không dùng điều kiện</span>
+                  </label>
+                  <label class="sql-toggle-pill">
+                    <input id="sqlConditionOn" name="sqlConditionMode" type="radio" value="on">
+                    <span>Có điều kiện</span>
+                  </label>
+                </div>
+                <div class="sql-condition-body" id="sqlConditionBody">
+                  <div class="sql-where-list" id="sqlWhereList"></div>
+                  <label class="sql-raw-where">
+                    <span>Where viết tay thêm</span>
+                    <textarea id="sqlRawWhereInput" rows="4" placeholder="VD: b.[NgayTao] >= '2026-01-01' AND t1.[TrangThai] = 1"></textarea>
+                  </label>
+                </div>
+              </section>
+
+              <section class="sql-section">
+                <div class="sql-section-head">
+                  <div>
+                    <p class="panel-box-kicker">Bước 6</p>
+                    <h4>Câu SQL</h4>
+                  </div>
+                  <div class="sql-section-actions">
+                    <button class="primary-btn" id="sqlCopyButton" type="button">Copy SQL</button>
+                  </div>
+                </div>
+                <p class="meta" id="sqlCopyStatus">Sinh tự động từ bảng và quan hệ trong `db.sql`.</p>
+                <textarea id="sqlOutput" class="sql-output" rows="16" readonly></textarea>
+              </section>
+            </div>
+          </div>
+        </section>
+      </section>
+
       <section class="content-panel" data-panel="controllers">
         <section class="toolbar">
           <label class="search-box">
@@ -332,6 +451,8 @@
   </div>
 
   <script src="./data.js"></script>
+  <script src="./sql-schema.js"></script>
+  <script src="../../../HisSoft/wwwroot/dist/libs/tom-select/dist/js/tom-select.complete.min.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

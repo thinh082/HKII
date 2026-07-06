@@ -1,5 +1,20 @@
 ﻿const report = window.__HTTPGET_VIEW_MAP__ || { items: [] };
 const dbStructure = report.dbStructure || { classes: [], edges: [] };
+const sqlSchema = window.__SQL_SCHEMA__ || { tables: [], relationships: [] };
+
+function makeSqlTableKey(schemaName, tableName) {
+  return `${schemaName}.${tableName}`;
+}
+
+const sqlTables = [...(sqlSchema.tables || [])]
+  .filter((item) => item && item.schema && item.name)
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+const sqlTableMap = new Map(
+  sqlTables.map((item) => [item.fullName || makeSqlTableKey(item.schema, item.name), item])
+);
+
+const sqlAdjacency = buildSqlAdjacency(sqlSchema.relationships || []);
 
 const overviewSections = [
   {
@@ -293,6 +308,10 @@ const flowDefinitions = [
 ];
 
 const MAINTAIN_NOTE_STORAGE_KEY = "daotaohis-maintain-notes-v1";
+let sqlBaseTomSelect = null;
+let sqlJoinTomSelect = null;
+let sqlBaseColumnTomSelect = null;
+const sqlJoinColumnTomSelects = new Map();
 let currentSearchResults = [];
 
 const state = {
@@ -302,6 +321,14 @@ const state = {
   flowModalOpen: false,
   dbSearch: "",
   dbModalOpen: false,
+  sqlBaseTable: "",
+  sqlSelectedTables: [],
+  sqlJoinTypes: {},
+  sqlSelectedColumns: [],
+  sqlConditionEnabled: false,
+  sqlWhereConditions: [],
+  sqlRawWhere: "",
+  sqlCopyStatus: "Sinh tự động từ bảng và quan hệ trong db.sql.",
   noteSearch: "",
   controllerSearch: "",
   folder: "",
@@ -352,6 +379,28 @@ const els = {
   dbDetailIntro: document.getElementById("dbDetailIntro"),
   dbSummaryBar: document.getElementById("dbSummaryBar"),
   dbRelationGrid: document.getElementById("dbRelationGrid"),
+  sqlBaseTableSelect: document.getElementById("sqlBaseTableSelect"),
+  sqlJoinTableSelect: document.getElementById("sqlJoinTableSelect"),
+  sqlResetButton: document.getElementById("sqlResetButton"),
+  sqlMiniStats: document.getElementById("sqlMiniStats"),
+  sqlJoinSummary: document.getElementById("sqlJoinSummary"),
+  sqlJoinSuggestionList: document.getElementById("sqlJoinSuggestionList"),
+  sqlSelectedJoinList: document.getElementById("sqlSelectedJoinList"),
+  sqlPanelTitle: document.getElementById("sqlPanelTitle"),
+  sqlPanelIntro: document.getElementById("sqlPanelIntro"),
+  sqlSelectBaseColumnsButton: document.getElementById("sqlSelectBaseColumnsButton"),
+  sqlClearBaseColumnsButton: document.getElementById("sqlClearBaseColumnsButton"),
+  sqlBaseColumnsWrap: document.getElementById("sqlBaseColumnsWrap"),
+  sqlJoinConfigList: document.getElementById("sqlJoinConfigList"),
+  sqlAddWhereButton: document.getElementById("sqlAddWhereButton"),
+  sqlConditionOff: document.getElementById("sqlConditionOff"),
+  sqlConditionOn: document.getElementById("sqlConditionOn"),
+  sqlConditionBody: document.getElementById("sqlConditionBody"),
+  sqlWhereList: document.getElementById("sqlWhereList"),
+  sqlRawWhereInput: document.getElementById("sqlRawWhereInput"),
+  sqlCopyButton: document.getElementById("sqlCopyButton"),
+  sqlCopyStatus: document.getElementById("sqlCopyStatus"),
+  sqlOutput: document.getElementById("sqlOutput"),
   controllerSearchInput: document.getElementById("controllerSearchInput"),
   folderFilter: document.getElementById("folderFilter"),
   viewExistsOnly: document.getElementById("viewExistsOnly"),
@@ -472,6 +521,285 @@ function slugify(value) {
 
 function compactList(values, limit = 6) {
   return uniqueValues(values).slice(0, limit);
+}
+
+function buildSqlAdjacency(relationships) {
+  const adjacency = new Map();
+
+  for (const relation of relationships || []) {
+    const fromKey = makeSqlTableKey(relation.fromSchema, relation.fromTable);
+    const toKey = makeSqlTableKey(relation.toSchema, relation.toTable);
+
+    if (!adjacency.has(fromKey)) {
+      adjacency.set(fromKey, []);
+    }
+    if (!adjacency.has(toKey)) {
+      adjacency.set(toKey, []);
+    }
+
+    adjacency.get(fromKey).push({
+      nextKey: toKey,
+      travel: "outgoing",
+      relation
+    });
+
+    adjacency.get(toKey).push({
+      nextKey: fromKey,
+      travel: "incoming",
+      relation
+    });
+  }
+
+  return adjacency;
+}
+
+function getSqlTable(tableKey) {
+  return sqlTableMap.get(tableKey) || null;
+}
+
+function getSqlTableLabel(tableKey) {
+  const table = getSqlTable(tableKey);
+  if (!table) {
+    return tableKey;
+  }
+
+  return `[${table.schema}].[${table.name}]`;
+}
+
+function getSqlBaseTableDisplay(table) {
+  return table ? `${table.name} (${table.schema})` : "";
+}
+
+function getSqlColumnSelectionsForTable(tableKey) {
+  return state.sqlSelectedColumns
+    .filter((item) => String(item).startsWith(`${tableKey}::`))
+    .map((item) => String(item).split("::")[1])
+    .filter(Boolean);
+}
+
+function setSqlColumnSelectionsForTable(tableKey, columnNames) {
+  const otherSelections = state.sqlSelectedColumns.filter((item) => !String(item).startsWith(`${tableKey}::`));
+  const nextSelections = (columnNames || []).map((columnName) => getSqlColumnKey(tableKey, columnName));
+  state.sqlSelectedColumns = uniqueValues([...otherSelections, ...nextSelections]);
+}
+
+function getSqlColumnKey(tableKey, columnName) {
+  return `${tableKey}::${columnName}`;
+}
+
+function createSqlWhereCondition(tableKey, columnName = "") {
+  const table = getSqlTable(tableKey);
+  const fallbackColumn = columnName || table?.columns?.[0]?.name || "";
+
+  return {
+    id: createId("sqlw"),
+    tableKey: tableKey || "",
+    columnName: fallbackColumn,
+    operator: "=",
+    value: ""
+  };
+}
+
+function isSqlNumericType(typeName) {
+  return /^(bigint|int|smallint|tinyint|decimal|numeric|float|real|money|smallmoney)$/i.test(typeName || "");
+}
+
+function isSqlBooleanType(typeName) {
+  return /^bit$/i.test(typeName || "");
+}
+
+function isSqlUnicodeType(typeName) {
+  return /^(nvarchar|nchar|ntext)$/i.test(typeName || "");
+}
+
+function buildSqlShortestPaths(baseKey) {
+  const pathMap = new Map();
+
+  if (!baseKey) {
+    return pathMap;
+  }
+
+  const queue = [baseKey];
+  pathMap.set(baseKey, []);
+
+  while (queue.length) {
+    const currentKey = queue.shift();
+    const currentPath = pathMap.get(currentKey) || [];
+    const neighbors = sqlAdjacency.get(currentKey) || [];
+
+    for (const edge of neighbors) {
+      if (pathMap.has(edge.nextKey)) {
+        continue;
+      }
+
+      pathMap.set(edge.nextKey, [
+        ...currentPath,
+        {
+          fromKey: currentKey,
+          toKey: edge.nextKey,
+          travel: edge.travel,
+          relation: edge.relation
+        }
+      ]);
+
+      queue.push(edge.nextKey);
+    }
+  }
+
+  return pathMap;
+}
+
+function getSqlReachableEntries(baseKey) {
+  const pathMap = buildSqlShortestPaths(baseKey);
+  const entries = [];
+  const baseName = getSqlTable(baseKey)?.name || baseKey;
+
+  for (const [tableKey, path] of pathMap.entries()) {
+    if (tableKey === baseKey) {
+      continue;
+    }
+
+    const targetTable = getSqlTable(tableKey);
+    if (!targetTable) {
+      continue;
+    }
+
+    const pathNames = [baseName, ...path.map((step) => getSqlTable(step.toKey)?.name || step.toKey)];
+    const lastStep = path[path.length - 1] || null;
+    const relation = lastStep?.relation || null;
+    const directionLabel = lastStep?.travel === "incoming" ? "cha -> con" : "con -> cha";
+
+    entries.push({
+      key: tableKey,
+      name: targetTable.name,
+      fullName: targetTable.fullName || tableKey,
+      depth: path.length,
+      path,
+      pathText: pathNames.join(" -> "),
+      directionLabel,
+      relationLabel: relation
+        ? `${relation.fromTable}.${(relation.fromColumns || []).join(", ")} -> ${relation.toTable}.${(relation.toColumns || []).join(", ")}`
+        : ""
+    });
+  }
+
+  return entries.sort((a, b) => a.depth - b.depth || a.name.localeCompare(b.name));
+}
+
+function collectSqlIncludedTableKeys(baseKey, pathMap, selectedTableKeys) {
+  const included = new Set(baseKey ? [baseKey] : []);
+
+  for (const tableKey of selectedTableKeys || []) {
+    const path = pathMap.get(tableKey) || [];
+    for (const step of path) {
+      included.add(step.fromKey);
+      included.add(step.toKey);
+    }
+  }
+
+  return [...included];
+}
+
+function buildSqlAliasMap(baseKey, includedKeys, pathMap) {
+  const aliasMap = new Map();
+
+  if (!baseKey) {
+    return aliasMap;
+  }
+
+  aliasMap.set(baseKey, "b");
+
+  const sortedKeys = [...includedKeys]
+    .filter((item) => item !== baseKey)
+    .sort((a, b) => {
+      const depthA = (pathMap.get(a) || []).length;
+      const depthB = (pathMap.get(b) || []).length;
+      return depthA - depthB || a.localeCompare(b);
+    });
+
+  let index = 1;
+  for (const tableKey of sortedKeys) {
+    aliasMap.set(tableKey, `t${index}`);
+    index += 1;
+  }
+
+  return aliasMap;
+}
+
+function formatSqlLiteral(value, column) {
+  const raw = String(value ?? "").trim();
+  if (!raw) {
+    return "''";
+  }
+
+  const typeName = String(column?.type || "").split("(")[0].trim().toLowerCase();
+  if (isSqlNumericType(typeName)) {
+    return raw;
+  }
+
+  if (isSqlBooleanType(typeName)) {
+    return /^(true|1)$/i.test(raw) ? "1" : "0";
+  }
+
+  const escaped = raw.replace(/'/g, "''");
+  if (isSqlUnicodeType(typeName)) {
+    return `N'${escaped}'`;
+  }
+
+  return `'${escaped}'`;
+}
+
+function buildSqlConditionText(condition, aliasMap) {
+  const table = getSqlTable(condition.tableKey);
+  if (!table) {
+    return "";
+  }
+
+  const column = (table.columns || []).find((item) => item.name === condition.columnName);
+  if (!column || !aliasMap.has(condition.tableKey)) {
+    return "";
+  }
+
+  const alias = aliasMap.get(condition.tableKey);
+  const operator = condition.operator || "=";
+  if (operator === "IS NULL" || operator === "IS NOT NULL") {
+    return `${alias}.[${column.name}] ${operator}`;
+  }
+
+  return `${alias}.[${column.name}] ${operator} ${formatSqlLiteral(condition.value, column)}`;
+}
+
+function buildSqlJoinCondition(step, aliasMap) {
+  const relation = step.relation;
+  const fromAlias = aliasMap.get(makeSqlTableKey(relation.fromSchema, relation.fromTable));
+  const toAlias = aliasMap.get(makeSqlTableKey(relation.toSchema, relation.toTable));
+
+  if (!fromAlias || !toAlias) {
+    return "";
+  }
+
+  const leftColumns = relation.fromColumns || [];
+  const rightColumns = relation.toColumns || [];
+  const parts = [];
+
+  for (let index = 0; index < Math.min(leftColumns.length, rightColumns.length); index += 1) {
+    parts.push(`${fromAlias}.[${leftColumns[index]}] = ${toAlias}.[${rightColumns[index]}]`);
+  }
+
+  return parts.join(" AND ");
+}
+
+function resetSqlBuilder(baseTableKey = "", keepBase = false) {
+  const fallbackBase = baseTableKey || sqlTables[0]?.fullName || "";
+
+  state.sqlBaseTable = keepBase ? (state.sqlBaseTable || fallbackBase) : fallbackBase;
+  state.sqlSelectedTables = [];
+  state.sqlJoinTypes = {};
+  state.sqlSelectedColumns = [];
+  state.sqlConditionEnabled = false;
+  state.sqlWhereConditions = [];
+  state.sqlRawWhere = "";
+  state.sqlCopyStatus = "Sinh tự động từ bảng và quan hệ trong db.sql.";
 }
 
 function extractControllerNamesFromManualFlows() {
@@ -611,6 +939,9 @@ if (!state.selectedFlowId && flows.length > 0) {
 }
 if (!state.selectedDbClass && dbStructure.classes.length > 0) {
   state.selectedDbClass = dbStructure.classes[0].name;
+}
+if (!state.sqlBaseTable && sqlTables.length > 0) {
+  resetSqlBuilder(sqlTables[0].fullName || makeSqlTableKey(sqlTables[0].schema, sqlTables[0].name));
 }
 
 function renderOverview() {
@@ -1285,6 +1616,823 @@ function syncNavigation() {
   }
 }
 
+function getSortedSqlTableKeys(tableKeys, pathMap, baseKey) {
+  return [...tableKeys].sort((a, b) => {
+    if (a === baseKey) {
+      return -1;
+    }
+    if (b === baseKey) {
+      return 1;
+    }
+
+    const depthA = (pathMap.get(a) || []).length;
+    const depthB = (pathMap.get(b) || []).length;
+    const tableA = getSqlTable(a);
+    const tableB = getSqlTable(b);
+    return depthA - depthB || String(tableA?.name || a).localeCompare(String(tableB?.name || b));
+  });
+}
+
+function getSqlBuilderModel() {
+  const baseKey = state.sqlBaseTable || sqlTables[0]?.fullName || "";
+  const pathMap = buildSqlShortestPaths(baseKey);
+  const reachableEntries = getSqlReachableEntries(baseKey);
+  const reachableKeys = new Set(reachableEntries.map((item) => item.key));
+
+  state.sqlSelectedTables = uniqueValues(state.sqlSelectedTables).filter((item) => reachableKeys.has(item));
+
+  const includedKeys = getSortedSqlTableKeys(
+    collectSqlIncludedTableKeys(baseKey, pathMap, state.sqlSelectedTables).filter((item) => sqlTableMap.has(item)),
+    pathMap,
+    baseKey
+  );
+  const activeKeySet = new Set(includedKeys);
+  const aliasMap = buildSqlAliasMap(baseKey, includedKeys, pathMap);
+
+  state.sqlSelectedColumns = uniqueValues(state.sqlSelectedColumns).filter((item) => {
+    const [tableKey] = String(item).split("::");
+    return activeKeySet.has(tableKey);
+  });
+
+  state.sqlWhereConditions = (state.sqlWhereConditions || [])
+    .map((condition) => {
+      if (!activeKeySet.has(condition.tableKey)) {
+        return createSqlWhereCondition(includedKeys[0] || baseKey || "");
+      }
+
+      const table = getSqlTable(condition.tableKey);
+      const columns = table?.columns || [];
+      const hasColumn = columns.some((item) => item.name === condition.columnName);
+      return {
+        ...condition,
+        columnName: hasColumn ? condition.columnName : (columns[0]?.name || "")
+      };
+    })
+    .filter((condition) => condition.tableKey);
+
+  const joinEntries = includedKeys
+    .filter((item) => item !== baseKey)
+    .map((tableKey) => {
+      const path = pathMap.get(tableKey) || [];
+      const step = path[path.length - 1];
+      if (!step) {
+        return null;
+      }
+
+      return {
+        tableKey,
+        path,
+        step,
+        joinType: state.sqlJoinTypes[tableKey] || "LEFT JOIN",
+        alias: aliasMap.get(tableKey) || "",
+        table: getSqlTable(tableKey)
+      };
+    })
+    .filter(Boolean);
+
+  const orderedColumnSelections = state.sqlSelectedColumns
+    .map((item) => {
+      const [tableKey, columnName] = String(item).split("::");
+      const table = getSqlTable(tableKey);
+      const column = table?.columns?.find((entry) => entry.name === columnName);
+      if (!table || !column || !aliasMap.has(tableKey)) {
+        return null;
+      }
+
+      return {
+        tableKey,
+        columnName,
+        alias: aliasMap.get(tableKey),
+        depth: (pathMap.get(tableKey) || []).length,
+        tableName: table.name
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.depth - b.depth || a.tableName.localeCompare(b.tableName) || a.columnName.localeCompare(b.columnName));
+
+  const selectLines = orderedColumnSelections.length
+    ? orderedColumnSelections.map((item) => `  ${item.alias}.[${item.columnName}] AS [${item.tableName}_${item.columnName}]`)
+    : [`  ${aliasMap.get(baseKey) || "b"}.*`];
+
+  const whereParts = state.sqlWhereConditions
+    .map((item) => buildSqlConditionText(item, aliasMap))
+    .filter(Boolean);
+  if (!state.sqlConditionEnabled) {
+    whereParts.length = 0;
+  } else {
+    const rawWhere = state.sqlRawWhere.trim();
+    if (rawWhere) {
+      whereParts.push(`(${rawWhere})`);
+    }
+  }
+
+  const sqlLines = [
+    "SELECT",
+    selectLines.join(",\n"),
+    `FROM ${getSqlTableLabel(baseKey)} AS ${aliasMap.get(baseKey) || "b"}`
+  ];
+
+  for (const join of joinEntries) {
+    const joinCondition = buildSqlJoinCondition(join.step, aliasMap);
+    if (!joinCondition) {
+      continue;
+    }
+
+    sqlLines.push(`${join.joinType} ${getSqlTableLabel(join.tableKey)} AS ${join.alias} ON ${joinCondition}`);
+  }
+
+  if (whereParts.length) {
+    sqlLines.push(`WHERE ${whereParts.join("\n  AND ")}`);
+  }
+
+  return {
+    baseKey,
+    pathMap,
+    reachableEntries,
+    directEntries: reachableEntries.filter((item) => item.depth === 1),
+    includedKeys,
+    aliasMap,
+    joinEntries,
+    sqlText: sqlLines.join("\n"),
+    whereCount: whereParts.length
+  };
+}
+
+function renderSqlBaseOptions() {
+  if (!els.sqlBaseTableSelect) {
+    return;
+  }
+
+  const options = sqlTables.map((table) => ({
+    value: table.fullName || makeSqlTableKey(table.schema, table.name),
+    text: getSqlBaseTableDisplay(table)
+  }));
+
+  if (sqlBaseTomSelect) {
+    sqlBaseTomSelect.clearOptions();
+    sqlBaseTomSelect.addOptions(options);
+    sqlBaseTomSelect.setValue(state.sqlBaseTable || options[0]?.value || "", true);
+    sqlBaseTomSelect.refreshOptions(false);
+    return;
+  }
+
+  els.sqlBaseTableSelect.innerHTML = options.map((option) => `
+    <option value="${escapeHtml(option.value)}">${escapeHtml(option.text)}</option>
+  `).join("");
+  els.sqlBaseTableSelect.value = state.sqlBaseTable || options[0]?.value || "";
+}
+
+function renderSqlMiniStats(model) {
+  els.sqlMiniStats.innerHTML = [
+    ["Join trực tiếp", model.directEntries.length],
+    ["Đang chọn", state.sqlSelectedTables.length]
+  ].map(([label, value]) => `
+    <article class="mini-stat">
+      <p class="mini-stat-label">${escapeHtml(label)}</p>
+      <p class="mini-stat-value">${escapeHtml(value)}</p>
+    </article>
+  `).join("");
+}
+
+function renderSqlJoinList(model) {
+  const selectedJoinCount = state.sqlSelectedTables.length;
+  const availableJoinCount = model.reachableEntries.length;
+  const directJoinCount = model.directEntries.length;
+  const indirectJoinCount = Math.max(availableJoinCount - directJoinCount, 0);
+  const suggestionEntries = model.directEntries
+    .filter((item) => !state.sqlSelectedTables.includes(item.key))
+    .slice(0, 12);
+
+  els.sqlJoinSummary.innerHTML = `
+    <div><strong>${getSqlTable(model.baseKey)?.name || "Chưa chọn"}</strong> là bảng gốc</div>
+    <div><strong>${directJoinCount}</strong> bảng join trực tiếp, <strong>${indirectJoinCount}</strong> bảng nhiều tầng, <strong>${selectedJoinCount}</strong> bảng đã thêm</div>
+  `;
+
+  if (!suggestionEntries.length) {
+    els.sqlJoinSuggestionList.innerHTML = "";
+  } else {
+    els.sqlJoinSuggestionList.innerHTML = `
+      <section class="sql-join-suggestion-box">
+        <div class="sql-join-suggestion-head">
+          <div>
+            <p class="panel-box-kicker">Join trực tiếp</p>
+            <h4>Gợi ý thêm nhanh</h4>
+          </div>
+          <p class="meta">Bấm vào tên bảng để thêm ngay, không cần gõ search.</p>
+        </div>
+        <div class="sql-join-chip-list">
+          ${suggestionEntries.map((entry) => `
+            <button class="sql-join-chip" type="button" data-sql-quick-join="${escapeHtml(entry.key)}">
+              <strong>${escapeHtml(entry.name)}</strong>
+              <span>${escapeHtml(entry.relationLabel || entry.pathText)}</span>
+            </button>
+          `).join("")}
+        </div>
+      </section>
+    `;
+  }
+
+  for (const button of els.sqlJoinSuggestionList.querySelectorAll("[data-sql-quick-join]")) {
+    button.addEventListener("click", () => {
+      const tableKey = button.dataset.sqlQuickJoin || "";
+      if (!tableKey) {
+        return;
+      }
+
+      state.sqlSelectedTables = uniqueValues([...state.sqlSelectedTables, tableKey]);
+      render();
+    });
+  }
+
+  if (!selectedJoinCount) {
+    const emptyMessage = availableJoinCount
+      ? `Chưa có bảng join nào được thêm. Có ${directJoinCount} bảng join trực tiếp và ${indirectJoinCount} bảng nhiều tầng. Gõ tên bảng ở dropdown phía trên hoặc bấm gợi ý bên dưới để thêm.`
+      : "Bảng này chưa tìm thấy quan hệ join trong dữ liệu db.sql.";
+    els.sqlSelectedJoinList.innerHTML = `<div class="empty">${escapeHtml(emptyMessage)}</div>`;
+    return;
+  }
+
+  els.sqlSelectedJoinList.innerHTML = model.joinEntries.map((join) => {
+    const table = join.table;
+    const isExplicitJoin = state.sqlSelectedTables.includes(join.tableKey);
+    const pathLabel = join.path.length
+      ? [getSqlTable(model.baseKey)?.name || model.baseKey, ...join.path.map((step) => getSqlTable(step.toKey)?.name || step.toKey)].join(" -> ")
+      : table?.name || join.tableKey;
+    return `
+      <article class="sql-selected-join-card ${isExplicitJoin ? "active" : ""}">
+        <div class="sql-selected-join-head">
+          <div>
+            <p class="controller-item-title">${escapeHtml(table?.name || join.tableKey)}</p>
+            <p class="controller-item-meta">${escapeHtml(pathLabel)}</p>
+          </div>
+          <button class="ghost-btn" type="button" data-sql-join-remove="${escapeHtml(join.tableKey)}">Bỏ</button>
+        </div>
+        <div class="sql-table-card-foot">
+          <span class="path-pill">${escapeHtml(join.alias)}</span>
+          <span class="path-pill">${escapeHtml(isExplicitJoin ? "Bảng join" : "Bảng trung gian")}</span>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  for (const button of els.sqlSelectedJoinList.querySelectorAll("[data-sql-join-remove]")) {
+    button.addEventListener("click", () => {
+      const tableKey = button.dataset.sqlJoinRemove || "";
+      state.sqlSelectedTables = state.sqlSelectedTables.filter((item) => item !== tableKey);
+      render();
+    });
+  }
+}
+
+function getSqlColumnGroupMarkup(tableKey, alias, title, subtitle, extraControls = "") {
+  const table = getSqlTable(tableKey);
+  const columns = table?.columns || [];
+
+  return `
+    <section class="sql-column-group">
+      <div class="sql-column-group-head">
+        <div>
+          <p class="panel-box-kicker">${escapeHtml(alias)}</p>
+          <h4>${escapeHtml(title)}</h4>
+          ${subtitle ? `<p class="meta sql-group-subtitle">${escapeHtml(subtitle)}</p>` : ""}
+        </div>
+        <div class="sql-section-actions">
+          ${extraControls}
+          <button class="ghost-btn" type="button" data-sql-column-scope="all" data-sql-column-table="${escapeHtml(tableKey)}">Chọn bảng</button>
+          <button class="ghost-btn" type="button" data-sql-column-scope="none" data-sql-column-table="${escapeHtml(tableKey)}">Bỏ bảng</button>
+        </div>
+      </div>
+      <div class="sql-column-list">
+        ${columns.map((column) => {
+          const columnKey = getSqlColumnKey(tableKey, column.name);
+          const checked = state.sqlSelectedColumns.includes(columnKey);
+          return `
+            <label class="sql-column-item">
+              <input type="checkbox" data-sql-column="${escapeHtml(columnKey)}" ${checked ? "checked" : ""}>
+              <span>${escapeHtml(column.name)}</span>
+              <small>${escapeHtml(column.type)}${column.nullable ? " | null" : ""}</small>
+            </label>
+          `;
+        }).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function destroySqlColumnTomSelects() {
+  if (sqlBaseColumnTomSelect) {
+    sqlBaseColumnTomSelect.destroy();
+    sqlBaseColumnTomSelect = null;
+  }
+
+  for (const instance of sqlJoinColumnTomSelects.values()) {
+    instance.destroy();
+  }
+  sqlJoinColumnTomSelects.clear();
+}
+
+function ensureSqlJoinTomSelect(model) {
+  if (!els.sqlJoinTableSelect) {
+    return;
+  }
+
+  const selectedSet = new Set(state.sqlSelectedTables);
+  const options = model.reachableEntries
+    .filter((item) => !selectedSet.has(item.key))
+    .map((item) => ({
+      value: item.key,
+      text: item.name,
+      subtext: item.pathText
+    }));
+
+  if (typeof window.TomSelect !== "function") {
+    els.sqlJoinTableSelect.innerHTML = [
+      `<option value="">Chọn bảng join...</option>`,
+      ...options.map((option) => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.text)}</option>`)
+    ].join("");
+    return;
+  }
+
+  if (!sqlJoinTomSelect) {
+  sqlJoinTomSelect = new window.TomSelect(els.sqlJoinTableSelect, {
+    create: false,
+    allowEmptyOption: true,
+    maxItems: 1,
+    maxOptions: 300,
+    placeholder: "Gõ tên bảng join rồi nhấn Enter",
+    searchField: ["text", "value", "subtext"],
+      valueField: "value",
+      labelField: "text",
+      sortField: [{ field: "text", direction: "asc" }],
+      render: {
+        option(data, escape) {
+          return `<div><strong>${escape(data.text)}</strong><div class="ts-option-subtext">${escape(data.subtext || "")}</div></div>`;
+        },
+        item(data, escape) {
+          return `<div>${escape(data.text)}</div>`;
+        }
+      }
+    });
+
+    sqlJoinTomSelect.on("change", (value) => {
+      if (!value) {
+        return;
+      }
+
+      state.sqlSelectedTables = uniqueValues([...state.sqlSelectedTables, value]);
+      sqlJoinTomSelect.clear(true);
+      render();
+    });
+  }
+
+  sqlJoinTomSelect.clearOptions();
+  sqlJoinTomSelect.addOption({ value: "", text: "Gõ tên bảng join rồi nhấn Enter", subtext: "" });
+  sqlJoinTomSelect.addOptions(options);
+  sqlJoinTomSelect.refreshOptions(false);
+  sqlJoinTomSelect.clear(true);
+}
+
+function ensureSqlBaseColumnTomSelect(tableKey) {
+  if (!els.sqlBaseColumnSelect) {
+    return;
+  }
+
+  const table = getSqlTable(tableKey);
+  const options = (table?.columns || []).map((column) => ({
+    value: column.name,
+    text: column.name,
+    subtext: `${column.type}${column.nullable ? " | null" : ""}`
+  }));
+
+  if (typeof window.TomSelect !== "function") {
+    els.sqlBaseColumnSelect.innerHTML = options.map((option) => `
+      <option value="${escapeHtml(option.value)}">${escapeHtml(option.text)} - ${escapeHtml(option.subtext)}</option>
+    `).join("");
+    for (const option of els.sqlBaseColumnSelect.options) {
+      option.selected = getSqlColumnSelectionsForTable(tableKey).includes(option.value);
+    }
+    return;
+  }
+
+  if (sqlBaseColumnTomSelect) {
+    sqlBaseColumnTomSelect.destroy();
+    sqlBaseColumnTomSelect = null;
+  }
+
+  sqlBaseColumnTomSelect = new window.TomSelect(els.sqlBaseColumnSelect, {
+    plugins: ["remove_button"],
+    create: false,
+    persist: false,
+    maxOptions: 400,
+    placeholder: "Gõ tên cột bảng gốc rồi nhấn Enter",
+    searchField: ["text", "value", "subtext"],
+    valueField: "value",
+    labelField: "text",
+    sortField: [{ field: "text", direction: "asc" }],
+    render: {
+      option(data, escape) {
+        return `<div><strong>${escape(data.text)}</strong><div class="ts-option-subtext">${escape(data.subtext || "")}</div></div>`;
+      }
+    }
+  });
+
+  sqlBaseColumnTomSelect.clearOptions();
+  sqlBaseColumnTomSelect.addOptions(options);
+  sqlBaseColumnTomSelect.setValue(getSqlColumnSelectionsForTable(tableKey), true);
+  sqlBaseColumnTomSelect.on("change", (values) => {
+    setSqlColumnSelectionsForTable(tableKey, Array.isArray(values) ? values : [values].filter(Boolean));
+    render();
+  });
+}
+
+function ensureSqlJoinColumnTomSelect(tableKey) {
+  const select = Array.from(document.querySelectorAll("[data-sql-join-column-select]"))
+    .find((item) => item.dataset.sqlJoinColumnSelect === tableKey);
+  if (!select) {
+    return;
+  }
+
+  const table = getSqlTable(tableKey);
+  const options = (table?.columns || []).map((column) => ({
+    value: column.name,
+    text: column.name,
+    subtext: `${column.type}${column.nullable ? " | null" : ""}`
+  }));
+
+  if (typeof window.TomSelect !== "function") {
+    select.innerHTML = options.map((option) => `
+      <option value="${escapeHtml(option.value)}">${escapeHtml(option.text)} - ${escapeHtml(option.subtext)}</option>
+    `).join("");
+    for (const option of select.options) {
+      option.selected = getSqlColumnSelectionsForTable(tableKey).includes(option.value);
+    }
+    return;
+  }
+
+  const instance = new window.TomSelect(select, {
+    plugins: ["remove_button"],
+    create: false,
+    persist: false,
+    maxOptions: 400,
+    placeholder: "Gõ tên cột của bảng này rồi nhấn Enter",
+    searchField: ["text", "value", "subtext"],
+    valueField: "value",
+    labelField: "text",
+    sortField: [{ field: "text", direction: "asc" }],
+    render: {
+      option(data, escape) {
+        return `<div><strong>${escape(data.text)}</strong><div class="ts-option-subtext">${escape(data.subtext || "")}</div></div>`;
+      }
+    }
+  });
+
+  instance.clearOptions();
+  instance.addOptions(options);
+  instance.setValue(getSqlColumnSelectionsForTable(tableKey), true);
+  instance.on("change", (values) => {
+    setSqlColumnSelectionsForTable(tableKey, Array.isArray(values) ? values : [values].filter(Boolean));
+    render();
+  });
+
+  sqlJoinColumnTomSelects.set(tableKey, instance);
+}
+
+function bindSqlColumnInteractions(rootElement) {
+  if (!rootElement) {
+    return;
+  }
+
+  for (const checkbox of rootElement.querySelectorAll("[data-sql-column]")) {
+    checkbox.addEventListener("change", () => {
+      const columnKey = checkbox.dataset.sqlColumn || "";
+      if (!columnKey) {
+        return;
+      }
+
+      if (checkbox.checked) {
+        state.sqlSelectedColumns = uniqueValues([...state.sqlSelectedColumns, columnKey]);
+      } else {
+        state.sqlSelectedColumns = state.sqlSelectedColumns.filter((item) => item !== columnKey);
+      }
+
+      render();
+    });
+  }
+
+  for (const button of rootElement.querySelectorAll("[data-sql-column-scope]")) {
+    button.addEventListener("click", () => {
+      const tableKey = button.dataset.sqlColumnTable || "";
+      const table = getSqlTable(tableKey);
+      const columnKeys = (table?.columns || []).map((item) => getSqlColumnKey(tableKey, item.name));
+
+      if (button.dataset.sqlColumnScope === "all") {
+        state.sqlSelectedColumns = uniqueValues([...state.sqlSelectedColumns, ...columnKeys]);
+      } else {
+        state.sqlSelectedColumns = state.sqlSelectedColumns.filter((item) => !columnKeys.includes(item));
+      }
+
+      render();
+    });
+  }
+
+  for (const select of rootElement.querySelectorAll("[data-sql-join-type]")) {
+    select.addEventListener("change", () => {
+      const tableKey = select.dataset.sqlJoinType || "";
+      state.sqlJoinTypes[tableKey] = select.value || "LEFT JOIN";
+      render();
+    });
+  }
+}
+
+function renderSqlBaseColumns(model) {
+  const baseKey = model.baseKey;
+  const baseTable = getSqlTable(baseKey);
+  const alias = model.aliasMap.get(baseKey) || "b";
+
+  if (!baseTable) {
+    els.sqlBaseColumnsWrap.innerHTML = `<div class="empty">Chưa có bảng gốc để chọn cột.</div>`;
+    return;
+  }
+
+  const selectedColumns = getSqlColumnSelectionsForTable(baseKey);
+  els.sqlBaseColumnsWrap.innerHTML = `
+    <div class="sql-picker-head">
+      <div>
+        <p class="panel-box-kicker">${escapeHtml(alias)}</p>
+        <h4>${escapeHtml(baseTable.name)}</h4>
+        <p class="meta sql-group-subtitle">${escapeHtml(baseTable.fullName || baseKey)} | bảng gốc</p>
+      </div>
+    </div>
+    <select id="sqlBaseColumnSelect" multiple placeholder="Gõ tên cột bảng gốc rồi nhấn Enter"></select>
+    <div class="sql-pill-list">
+      ${selectedColumns.length
+        ? selectedColumns.map((columnName) => `<span class="path-pill">${escapeHtml(columnName)}</span>`).join("")
+        : `<span class="meta">Chưa chọn cột nào, mặc định sẽ dùng ${escapeHtml(alias)}.*</span>`}
+    </div>
+  `;
+
+  els.sqlBaseColumnSelect = document.getElementById("sqlBaseColumnSelect");
+  ensureSqlBaseColumnTomSelect(baseKey);
+  if (els.sqlBaseColumnSelect && typeof window.TomSelect !== "function") {
+    els.sqlBaseColumnSelect.addEventListener("change", () => {
+      setSqlColumnSelectionsForTable(
+        baseKey,
+        Array.from(els.sqlBaseColumnSelect.selectedOptions).map((option) => option.value)
+      );
+      render();
+    });
+  }
+}
+
+function renderSqlJoinConfigs(model) {
+  if (!model.joinEntries.length) {
+    els.sqlJoinConfigList.innerHTML = `<div class="empty">Chưa chọn bảng join nào ở khung bên trái.</div>`;
+    return;
+  }
+
+  els.sqlJoinConfigList.innerHTML = model.joinEntries.map((join) => {
+    const table = join.table;
+    const isExplicitJoin = state.sqlSelectedTables.includes(join.tableKey);
+    const pathLabel = join.path.length
+      ? [getSqlTable(model.baseKey)?.name || model.baseKey, ...join.path.map((step) => getSqlTable(step.toKey)?.name || step.toKey)].join(" -> ")
+      : table?.name || join.tableKey;
+    const extraControls = `
+      <span class="path-pill">${isExplicitJoin ? "Bảng join" : "Bảng trung gian"}</span>
+      <select class="sql-inline-select" data-sql-join-type="${escapeHtml(join.tableKey)}">
+        <option value="LEFT JOIN" ${join.joinType === "LEFT JOIN" ? "selected" : ""}>LEFT JOIN</option>
+        <option value="INNER JOIN" ${join.joinType === "INNER JOIN" ? "selected" : ""}>INNER JOIN</option>
+      </select>
+    `;
+
+    const selectedColumns = getSqlColumnSelectionsForTable(join.tableKey);
+    return `
+      <article class="sql-join-config-card">
+        <div class="sql-column-group-head">
+          <div>
+            <p class="panel-box-kicker">${escapeHtml(join.alias)}</p>
+            <h4>${escapeHtml(table?.name || join.tableKey)}</h4>
+            <p class="meta sql-group-subtitle">${escapeHtml(pathLabel)} | ${escapeHtml(join.step.relation.fromTable)}.${escapeHtml((join.step.relation.fromColumns || []).join(", "))} -> ${escapeHtml(join.step.relation.toTable)}.${escapeHtml((join.step.relation.toColumns || []).join(", "))}</p>
+          </div>
+          <div class="sql-section-actions">
+            ${extraControls}
+            ${isExplicitJoin ? `<button class="ghost-btn" type="button" data-sql-join-remove="${escapeHtml(join.tableKey)}">Bỏ bảng</button>` : ""}
+          </div>
+        </div>
+        <select data-sql-join-column-select="${escapeHtml(join.tableKey)}" multiple placeholder="Gõ tên cột của bảng này rồi nhấn Enter"></select>
+        <div class="sql-pill-list">
+          ${selectedColumns.length
+            ? selectedColumns.map((columnName) => `<span class="path-pill">${escapeHtml(columnName)}</span>`).join("")
+            : `<span class="meta">Chưa chọn cột nào từ bảng này.</span>`}
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  bindSqlColumnInteractions(els.sqlJoinConfigList);
+  for (const join of model.joinEntries) {
+    ensureSqlJoinColumnTomSelect(join.tableKey);
+  }
+
+  if (typeof window.TomSelect !== "function") {
+    for (const select of els.sqlJoinConfigList.querySelectorAll("[data-sql-join-column-select]")) {
+      select.addEventListener("change", () => {
+        const tableKey = select.dataset.sqlJoinColumnSelect || "";
+        setSqlColumnSelectionsForTable(
+          tableKey,
+          Array.from(select.selectedOptions).map((option) => option.value)
+        );
+        render();
+      });
+    }
+  }
+
+  for (const button of els.sqlJoinConfigList.querySelectorAll("[data-sql-join-remove]")) {
+    button.addEventListener("click", () => {
+      const tableKey = button.dataset.sqlJoinRemove || "";
+      state.sqlSelectedTables = state.sqlSelectedTables.filter((item) => item !== tableKey);
+      render();
+    });
+  }
+}
+
+function renderSqlWhereBuilder(model) {
+  const activeTables = model.includedKeys.map((tableKey) => ({
+    tableKey,
+    table: getSqlTable(tableKey),
+    alias: model.aliasMap.get(tableKey) || ""
+  })).filter((item) => item.table);
+
+  if (!activeTables.length) {
+    els.sqlWhereList.innerHTML = `<div class="empty">Chưa có bảng nào để tạo điều kiện.</div>`;
+    return;
+  }
+
+  els.sqlConditionOff.checked = !state.sqlConditionEnabled;
+  els.sqlConditionOn.checked = state.sqlConditionEnabled;
+  els.sqlConditionBody.classList.toggle("hidden", !state.sqlConditionEnabled);
+
+  if (!state.sqlConditionEnabled) {
+    els.sqlWhereList.innerHTML = `<div class="empty">Đang tắt điều kiện. Bật "Có điều kiện" nếu cần thêm WHERE.</div>`;
+    return;
+  }
+
+  if (!state.sqlWhereConditions.length) {
+    els.sqlWhereList.innerHTML = `<div class="empty">Chưa có điều kiện nào. Bấm "Thêm điều kiện" để tạo where builder.</div>`;
+    return;
+  }
+
+  els.sqlWhereList.innerHTML = state.sqlWhereConditions.map((condition) => {
+    const table = getSqlTable(condition.tableKey);
+    const columns = table?.columns || [];
+    const operator = condition.operator || "=";
+
+    return `
+      <div class="sql-where-row">
+        <select data-sql-where-table="${escapeHtml(condition.id)}">
+          ${activeTables.map((item) => `
+            <option value="${escapeHtml(item.tableKey)}" ${item.tableKey === condition.tableKey ? "selected" : ""}>
+              ${escapeHtml(item.table.name)} (${escapeHtml(item.alias)})
+            </option>
+          `).join("")}
+        </select>
+
+        <select data-sql-where-column="${escapeHtml(condition.id)}">
+          ${columns.map((column) => `
+            <option value="${escapeHtml(column.name)}" ${column.name === condition.columnName ? "selected" : ""}>${escapeHtml(column.name)}</option>
+          `).join("")}
+        </select>
+
+        <select data-sql-where-operator="${escapeHtml(condition.id)}">
+          ${["=", "<>", ">", ">=", "<", "<=", "LIKE", "IS NULL", "IS NOT NULL"].map((item) => `
+            <option value="${escapeHtml(item)}" ${item === operator ? "selected" : ""}>${escapeHtml(item)}</option>
+          `).join("")}
+        </select>
+
+        <input
+          type="text"
+          data-sql-where-value="${escapeHtml(condition.id)}"
+          value="${escapeHtml(condition.value || "")}"
+          placeholder="Giá trị"
+          ${operator === "IS NULL" || operator === "IS NOT NULL" ? "disabled" : ""}
+        >
+
+        <button class="ghost-btn" type="button" data-sql-where-remove="${escapeHtml(condition.id)}">Xóa</button>
+      </div>
+    `;
+  }).join("");
+
+  for (const select of els.sqlWhereList.querySelectorAll("[data-sql-where-table]")) {
+    select.addEventListener("change", () => {
+      const id = select.dataset.sqlWhereTable || "";
+      state.sqlWhereConditions = state.sqlWhereConditions.map((item) => {
+        if (item.id !== id) {
+          return item;
+        }
+
+        const nextTableKey = select.value || "";
+        return createSqlWhereCondition(nextTableKey, "");
+      });
+      render();
+    });
+  }
+
+  for (const select of els.sqlWhereList.querySelectorAll("[data-sql-where-column]")) {
+    select.addEventListener("change", () => {
+      const id = select.dataset.sqlWhereColumn || "";
+      state.sqlWhereConditions = state.sqlWhereConditions.map((item) => (
+        item.id === id ? { ...item, columnName: select.value || "" } : item
+      ));
+      render();
+    });
+  }
+
+  for (const select of els.sqlWhereList.querySelectorAll("[data-sql-where-operator]")) {
+    select.addEventListener("change", () => {
+      const id = select.dataset.sqlWhereOperator || "";
+      state.sqlWhereConditions = state.sqlWhereConditions.map((item) => (
+        item.id === id ? { ...item, operator: select.value || "=", value: item.value || "" } : item
+      ));
+      render();
+    });
+  }
+
+  for (const input of els.sqlWhereList.querySelectorAll("[data-sql-where-value]")) {
+    input.addEventListener("input", () => {
+      const id = input.dataset.sqlWhereValue || "";
+      state.sqlWhereConditions = state.sqlWhereConditions.map((item) => (
+        item.id === id ? { ...item, value: input.value } : item
+      ));
+      renderSqlOutput(getSqlBuilderModel());
+    });
+  }
+
+  for (const button of els.sqlWhereList.querySelectorAll("[data-sql-where-remove]")) {
+    button.addEventListener("click", () => {
+      const id = button.dataset.sqlWhereRemove || "";
+      state.sqlWhereConditions = state.sqlWhereConditions.filter((item) => item.id !== id);
+      render();
+    });
+  }
+}
+
+function renderSqlOutput(model) {
+  const baseTable = getSqlTable(model.baseKey);
+  els.sqlPanelTitle.textContent = `SELECT từ ${baseTable?.name || "bảng gốc"}`;
+  els.sqlPanelIntro.textContent = `${model.joinEntries.length} join | ${state.sqlSelectedColumns.length} cột được chọn | ${model.whereCount} điều kiện`;
+  els.sqlCopyStatus.textContent = state.sqlCopyStatus;
+  els.sqlRawWhereInput.value = state.sqlRawWhere;
+  els.sqlOutput.value = model.sqlText;
+}
+
+function renderSqlBuilder() {
+  renderSqlBaseOptions();
+  destroySqlColumnTomSelects();
+
+  if (!state.sqlBaseTable) {
+    els.sqlMiniStats.innerHTML = "";
+    els.sqlJoinSummary.innerHTML = "";
+    els.sqlJoinSuggestionList.innerHTML = "";
+    els.sqlSelectedJoinList.innerHTML = `<div class="empty">Chưa có dữ liệu bảng từ db.sql.</div>`;
+    els.sqlBaseColumnsWrap.innerHTML = `<div class="empty">Chưa có dữ liệu.</div>`;
+    els.sqlJoinConfigList.innerHTML = `<div class="empty">Chưa có dữ liệu.</div>`;
+    els.sqlWhereList.innerHTML = `<div class="empty">Chưa có dữ liệu.</div>`;
+    els.sqlOutput.value = "";
+    return;
+  }
+
+  const model = getSqlBuilderModel();
+  renderSqlMiniStats(model);
+  renderSqlJoinList(model);
+  renderSqlBaseColumns(model);
+  renderSqlJoinConfigs(model);
+  renderSqlWhereBuilder(model);
+  renderSqlOutput(model);
+  ensureSqlJoinTomSelect(model);
+}
+
+function ensureSqlBaseTomSelect() {
+  if (!els.sqlBaseTableSelect || sqlBaseTomSelect || typeof window.TomSelect !== "function") {
+    return;
+  }
+
+  sqlBaseTomSelect = new window.TomSelect(els.sqlBaseTableSelect, {
+    create: false,
+    allowEmptyOption: false,
+    maxOptions: 400,
+    searchField: ["text", "value"],
+    sortField: [{ field: "text", direction: "asc" }]
+  });
+
+  sqlBaseTomSelect.on("change", (value) => {
+    if (!value || value === state.sqlBaseTable) {
+      return;
+    }
+
+    resetSqlBuilder(value);
+    render();
+  });
+}
+
 function populateFolderFilter() {
   const folders = [...new Set(report.items.map((item) => item.folder).filter(Boolean))];
   for (const folder of folders) {
@@ -1467,6 +2615,7 @@ function render() {
   renderFlowModal();
   renderDbClassList();
   renderDbDetail();
+  renderSqlBuilder();
   renderDbModalState();
   renderFlowModalState();
   syncBodyModalState();
@@ -1562,6 +2711,104 @@ for (const element of els.dbModal.querySelectorAll("[data-modal-close]")) {
   });
 }
 
+els.sqlBaseTableSelect.addEventListener("change", (event) => {
+  if (sqlBaseTomSelect) {
+    return;
+  }
+
+  const nextTableKey = event.target.value || "";
+  if (!nextTableKey || nextTableKey === state.sqlBaseTable) {
+    return;
+  }
+
+  resetSqlBuilder(nextTableKey);
+  render();
+});
+
+els.sqlJoinTableSelect.addEventListener("change", (event) => {
+  if (sqlJoinTomSelect) {
+    return;
+  }
+
+  const tableKey = event.target.value || "";
+  if (!tableKey) {
+    return;
+  }
+
+  state.sqlSelectedTables = uniqueValues([...state.sqlSelectedTables, tableKey]);
+  render();
+});
+
+els.sqlResetButton.addEventListener("click", () => {
+  resetSqlBuilder(state.sqlBaseTable || sqlTables[0]?.fullName || "");
+  render();
+});
+
+els.sqlSelectBaseColumnsButton.addEventListener("click", () => {
+  const baseTable = getSqlTable(state.sqlBaseTable);
+  const baseColumns = (baseTable?.columns || []).map((item) => getSqlColumnKey(state.sqlBaseTable, item.name));
+  state.sqlSelectedColumns = uniqueValues([...state.sqlSelectedColumns, ...baseColumns]);
+  render();
+});
+
+els.sqlClearBaseColumnsButton.addEventListener("click", () => {
+  const baseTable = getSqlTable(state.sqlBaseTable);
+  const baseColumns = (baseTable?.columns || []).map((item) => getSqlColumnKey(state.sqlBaseTable, item.name));
+  state.sqlSelectedColumns = state.sqlSelectedColumns.filter((item) => !baseColumns.includes(item));
+  render();
+});
+
+els.sqlAddWhereButton.addEventListener("click", () => {
+  state.sqlConditionEnabled = true;
+  const model = getSqlBuilderModel();
+  const firstTableKey = model.includedKeys[0] || state.sqlBaseTable || "";
+  if (!firstTableKey) {
+    return;
+  }
+
+  state.sqlWhereConditions = [...state.sqlWhereConditions, createSqlWhereCondition(firstTableKey)];
+  render();
+});
+
+for (const input of [els.sqlConditionOff, els.sqlConditionOn]) {
+  input.addEventListener("change", () => {
+    state.sqlConditionEnabled = input.value === "on";
+    if (state.sqlConditionEnabled && !state.sqlWhereConditions.length) {
+      const model = getSqlBuilderModel();
+      const firstTableKey = model.includedKeys[0] || state.sqlBaseTable || "";
+      if (firstTableKey) {
+        state.sqlWhereConditions = [createSqlWhereCondition(firstTableKey)];
+      }
+    }
+    render();
+  });
+}
+
+els.sqlRawWhereInput.addEventListener("input", (event) => {
+  state.sqlRawWhere = event.target.value;
+  renderSqlOutput(getSqlBuilderModel());
+});
+
+els.sqlCopyButton.addEventListener("click", async () => {
+  const sqlText = els.sqlOutput.value || "";
+  if (!sqlText.trim()) {
+    state.sqlCopyStatus = "Chưa có câu SQL để copy.";
+    renderSqlOutput(getSqlBuilderModel());
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(sqlText);
+    state.sqlCopyStatus = "Đã copy câu SQL vào clipboard.";
+  } catch {
+    els.sqlOutput.focus();
+    els.sqlOutput.select();
+    state.sqlCopyStatus = "Không copy tự động được, đã bôi đen sẵn câu SQL.";
+  }
+
+  renderSqlOutput(getSqlBuilderModel());
+});
+
 els.controllerSearchInput.addEventListener("input", (event) => {
   state.controllerSearch = event.target.value;
   render();
@@ -1591,4 +2838,6 @@ els.viewExistsOnly.addEventListener("change", (event) => {
 
 resetNoteForm();
 populateFolderFilter();
+renderSqlBaseOptions();
+ensureSqlBaseTomSelect();
 render();

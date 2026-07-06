@@ -1061,6 +1061,478 @@ body.modal-open {
   font-weight: 700;
 }
 
+.sql-toolbar {
+  grid-template-columns: minmax(240px, 0.85fr) minmax(300px, 1fr) auto;
+  position: relative;
+  z-index: 12;
+  overflow: visible;
+}
+
+.sql-toolbar-actions {
+  display: flex;
+  align-items: end;
+}
+
+.sql-toolbar .ts-wrapper {
+  width: 100%;
+  position: relative;
+  z-index: 6;
+}
+
+.sql-toolbar .ts-wrapper.single .ts-control,
+.sql-toolbar .ts-control {
+  min-height: 46px;
+  padding: 9px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #fffefb;
+  box-shadow: none;
+}
+
+.sql-toolbar .ts-wrapper.focus .ts-control {
+  border-color: rgba(15, 118, 110, 0.36);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.08);
+}
+
+.sql-toolbar .ts-dropdown {
+  border-radius: 16px;
+  border: 1px solid rgba(31, 42, 44, 0.12);
+  background: #fffefb;
+  box-shadow: 0 18px 36px rgba(57, 46, 28, 0.12);
+  z-index: 30;
+}
+
+.sql-toolbar .ts-dropdown .dropdown-content {
+  background: #fffefb;
+  border-radius: 16px;
+}
+
+.sql-toolbar .ts-dropdown .option.active,
+.sql-toolbar .ts-dropdown .active {
+  background: rgba(15, 118, 110, 0.08);
+  color: var(--ink);
+}
+
+.sql-toolbar .ts-dropdown .option {
+  padding: 10px 12px;
+}
+
+.ts-option-subtext {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.sql-combobox {
+  position: relative;
+}
+
+.sql-combobox-trigger {
+  width: 100%;
+  height: 46px;
+  padding: 0 44px 0 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #fffefb;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+}
+
+.sql-combobox-trigger::after {
+  content: "▾";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.sql-combobox-menu {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 20;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.64);
+  background: var(--panel-strong);
+  box-shadow: 0 18px 36px rgba(57, 46, 28, 0.16);
+}
+
+.sql-combobox.open .sql-combobox-menu {
+  display: grid;
+  gap: 10px;
+}
+
+.sql-combobox-menu input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fffefb;
+  color: var(--ink);
+  font: inherit;
+}
+
+.sql-combobox-options {
+  display: grid;
+  gap: 8px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.sql-combobox-option {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.82);
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+}
+
+.sql-combobox-option span,
+.sql-combobox-empty {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.sql-combobox-option.active,
+.sql-combobox-option:hover {
+  border-color: rgba(15, 118, 110, 0.28);
+  background: rgba(15, 118, 110, 0.08);
+}
+
+.sql-builder-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.sql-detail-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.sql-table-panel {
+  min-height: auto;
+}
+
+.sql-detail-panel {
+  min-height: auto;
+}
+
+.sql-section {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.44);
+}
+
+.sql-section-head,
+.sql-column-group-head,
+.sql-path-head,
+.sql-table-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.sql-section-head h4,
+.sql-column-group-head h4 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.sql-section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sql-table-list,
+.sql-columns-wrap,
+.sql-join-config-list,
+.sql-selected-paths,
+.sql-where-list {
+  display: grid;
+  gap: 14px;
+}
+
+.sql-selected-join-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sql-join-suggestion-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.sql-join-suggestion-box {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.sql-join-suggestion-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sql-join-suggestion-head h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.sql-join-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sql-join-chip {
+  min-width: 220px;
+  max-width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sql-join-chip strong,
+.sql-join-chip span {
+  display: block;
+}
+
+.sql-join-chip strong {
+  font-size: 15px;
+}
+
+.sql-join-chip span {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.sql-join-chip:hover {
+  border-color: rgba(15, 118, 110, 0.3);
+  background: rgba(15, 118, 110, 0.08);
+}
+
+.sql-table-card,
+.sql-path-card,
+.sql-column-group,
+.sql-join-config-card,
+.sql-selected-join-card,
+.sql-column-picker {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.sql-selected-join-head,
+.sql-picker-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sql-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.sql-column-picker .ts-wrapper,
+.sql-join-config-card .ts-wrapper {
+  width: 100%;
+}
+
+.sql-column-picker .ts-control,
+.sql-join-config-card .ts-control {
+  min-height: 46px;
+  padding: 7px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #fffefb;
+  box-shadow: none;
+}
+
+.sql-column-picker .ts-dropdown,
+.sql-join-config-card .ts-dropdown {
+  border-radius: 16px;
+  border: 1px solid rgba(31, 42, 44, 0.12);
+  background: #fffefb;
+  box-shadow: 0 18px 36px rgba(57, 46, 28, 0.12);
+}
+
+.sql-table-card.active {
+  border-color: rgba(15, 118, 110, 0.34);
+  background: rgba(15, 118, 110, 0.08);
+}
+
+.sql-table-check,
+.sql-column-item {
+  display: grid;
+  gap: 8px;
+  color: var(--ink);
+}
+
+.sql-table-check {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+}
+
+.sql-table-check input,
+.sql-column-item input {
+  margin-top: 4px;
+}
+
+.sql-path-text,
+.sql-relation-text,
+.sql-path-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.sql-relation-text {
+  font-size: 13px;
+}
+
+.sql-table-card-foot {
+  margin-top: 12px;
+  align-items: center;
+}
+
+.sql-inline-select,
+.sql-table-card-foot select,
+.sql-where-row select,
+.sql-where-row input,
+.sql-raw-where textarea,
+.sql-output {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #fffefb;
+  color: var(--ink);
+  font: inherit;
+}
+
+.sql-inline-select,
+.sql-table-card-foot select,
+.sql-where-row select,
+.sql-where-row input {
+  height: 42px;
+  padding: 0 12px;
+}
+
+.sql-inline-select {
+  min-width: 150px;
+}
+
+.sql-group-subtitle {
+  margin-top: 6px;
+}
+
+.sql-column-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.sql-column-item {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 118, 110, 0.12);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.sql-column-item span {
+  font-weight: 700;
+}
+
+.sql-column-item small {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.sql-condition-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.sql-toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.76);
+  cursor: pointer;
+}
+
+.sql-condition-body.hidden {
+  display: none;
+}
+
+.sql-where-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.1fr) minmax(180px, 1.1fr) 140px minmax(180px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.sql-raw-where {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.sql-raw-where textarea,
+.sql-output {
+  padding: 14px;
+  resize: vertical;
+}
+
+.sql-output {
+  min-height: 320px;
+  font-family: Consolas, "Courier New", monospace;
+  line-height: 1.6;
+}
+
 .empty {
   padding: 28px 18px;
   text-align: center;
@@ -1070,8 +1542,14 @@ body.modal-open {
 @media (max-width: 1260px) {
   .overview-grid,
   .workspace-grid,
-  .timeline-grid {
+  .timeline-grid,
+  .sql-builder-grid {
     grid-template-columns: 1fr;
+  }
+
+  .sql-selected-join-list,
+  .sql-column-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .db-class-grid {
@@ -1112,11 +1590,26 @@ body.modal-open {
     grid-template-columns: 1fr;
   }
 
+  .sql-selected-join-list,
+  .sql-column-list,
+  .sql-where-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sql-condition-toggle {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .overview-hero,
   .panel-box-head,
   .modal-head,
   .detail-head,
-  .summary {
+  .summary,
+  .sql-section-head,
+  .sql-column-group-head,
+  .sql-path-head,
+  .sql-table-card-foot {
     flex-direction: column;
     align-items: flex-start;
   }
