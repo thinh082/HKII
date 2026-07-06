@@ -1,0 +1,213 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bản đồ View HTTPGet</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="dashboard-shell">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <p class="brand-mini">DaotaoHIS</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" type="button" data-view="overview">
+          <span class="nav-kicker">Tổng quan</span>
+          <span class="nav-label">Tổng quan dự án</span>
+        </button>
+        <button class="nav-item" type="button" data-view="flows">
+          <span class="nav-kicker">Truy vết</span>
+          <span class="nav-label">Luồng truy vết chức năng</span>
+        </button>
+        <button class="nav-item" type="button" data-view="db">
+          <span class="nav-kicker">Database</span>
+          <span class="nav-label">Cấu trúc DB</span>
+        </button>
+        <button class="nav-item" type="button" data-view="controllers">
+          <span class="nav-kicker">Danh mục</span>
+          <span class="nav-label">Controller chứa View</span>
+        </button>
+      </nav>
+    </aside>
+
+    <main class="main-panel">
+      <section class="content-panel active" data-panel="overview">
+        <div class="overview-hero">
+          <div>
+            <p class="panel-box-kicker">Tổng quan dự án</p>
+            <h2>Tổng quan dự án</h2>
+          </div>
+          <div class="overview-mini-grid" id="overviewMiniStats"></div>
+        </div>
+
+        <section class="overview-grid" id="overviewGrid"></section>
+      </section>
+
+      <section class="content-panel" data-panel="flows">
+        <section class="toolbar">
+          <label class="search-box">
+            <span>Tìm tên luồng</span>
+            <input id="flowSearchInput" type="search" placeholder="VD: đăng nhập, xét nghiệm, Excel">
+          </label>
+        </section>
+
+        <section class="db-workspace">
+          <div class="browser-panel db-browser-panel">
+            <div class="panel-box-head">
+              <div>
+                <p class="panel-box-kicker">Truy vết</p>
+                <h3>Danh sách luồng chức năng</h3>
+                <p class="detail-intro">Bấm vào một luồng để mở modal xem từ màn hình tới DB.</p>
+              </div>
+              <div class="mini-stats" id="flowMiniStats"></div>
+            </div>
+            <div class="flow-card-grid" id="flowList"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="content-panel" data-panel="db">
+        <section class="toolbar">
+          <label class="search-box">
+            <span>Tìm tên class</span>
+            <input id="dbClassSearchInput" type="search" placeholder="VD: DmBenhNhan">
+          </label>
+        </section>
+
+        <section class="db-workspace">
+          <div class="browser-panel db-browser-panel">
+            <div class="panel-box-head">
+              <div>
+                <p class="panel-box-kicker">Database</p>
+                <h3>Class trong DB</h3>
+                <p class="detail-intro">Bấm vào một class để mở modal xem sơ đồ cây quan hệ.</p>
+              </div>
+              <div class="mini-stats" id="dbMiniStats"></div>
+            </div>
+            <div class="db-class-grid" id="dbClassList"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="content-panel" data-panel="controllers">
+        <section class="toolbar">
+          <label class="search-box">
+            <span>Tìm tên controller</span>
+            <input id="controllerSearchInput" type="search" placeholder="VD: QL_KhamBenhController">
+          </label>
+
+          <label class="select-box">
+            <span>Folder</span>
+            <select id="folderFilter">
+              <option value="">Tất cả</option>
+            </select>
+          </label>
+
+          <label class="check-box">
+            <input id="viewExistsOnly" type="checkbox">
+            <span>Chỉ hiện controller/action có view tồn tại</span>
+          </label>
+        </section>
+
+        <section class="workspace-grid">
+          <div class="browser-panel">
+            <div class="panel-box-head">
+              <div>
+                <p class="panel-box-kicker">Danh sách</p>
+                <h3>Các controller chứa View</h3>
+              </div>
+              <div class="mini-stats" id="sidebarStats"></div>
+            </div>
+            <div class="controller-list" id="controllerList"></div>
+          </div>
+
+          <div class="detail-panel">
+            <div class="detail-head">
+              <div>
+                <p class="panel-box-kicker">Chi tiết</p>
+                <h3 id="contentTitle">Tất cả controller</h3>
+                <p class="detail-intro" id="contentIntro">
+                  Action, route, view và JS của controller đang chọn.
+                </p>
+              </div>
+            </div>
+
+            <section class="summary" id="summaryBar"></section>
+
+            <section class="table-wrap">
+              <table class="report-table">
+                <thead>
+                  <tr>
+                    <th>Folder</th>
+                    <th>Action</th>
+                    <th>Route</th>
+                    <th>View</th>
+                    <th>JS / Fetch</th>
+                  </tr>
+                </thead>
+                <tbody id="reportBody"></tbody>
+              </table>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-shell" id="dbModal" aria-hidden="true">
+    <div class="modal-backdrop" data-modal-close="true"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="dbDetailTitle">
+      <div class="modal-head">
+        <div>
+          <p class="panel-box-kicker">Sơ đồ quan hệ DB</p>
+          <h3 id="dbDetailTitle">Chọn class</h3>
+          <p class="detail-intro" id="dbDetailIntro">
+            Hiển thị class đang liên kết với những class nào.
+          </p>
+        </div>
+        <button class="modal-close" id="dbModalClose" type="button" aria-label="Đóng modal">Đóng</button>
+      </div>
+
+      <section class="summary" id="dbSummaryBar"></section>
+
+      <section class="relation-grid" id="dbRelationGrid"></section>
+    </div>
+  </div>
+
+  <div class="modal-shell" id="flowModal" aria-hidden="true">
+    <div class="modal-backdrop" data-flow-modal-close="true"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="flowModalTitle">
+      <div class="modal-head">
+        <div>
+          <p class="panel-box-kicker">Luồng truy vết chức năng</p>
+          <h3 id="flowModalTitle">Chọn luồng</h3>
+          <p class="detail-intro" id="flowModalIntro">Từ màn hình tới controller, service và DB.</p>
+        </div>
+        <button class="modal-close" id="flowModalClose" type="button" aria-label="Đóng modal">Đóng</button>
+      </div>
+
+      <section class="summary" id="flowSummaryBar"></section>
+
+      <section class="flow-modal-body">
+        <div class="flow-chain" id="flowChain"></div>
+        <div class="flow-notes-panel">
+          <div class="flow-note-block">
+            <p class="panel-box-kicker">Từ khóa nên search</p>
+            <div class="pill-list" id="flowKeywords"></div>
+          </div>
+          <div class="flow-note-block">
+            <p class="panel-box-kicker">File / điểm chạm</p>
+            <div class="flow-file-list" id="flowFiles"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
