@@ -292,14 +292,20 @@ const flowDefinitions = [
   }
 ];
 
+const MAINTAIN_NOTE_STORAGE_KEY = "daotaohis-maintain-notes-v1";
+let currentSearchResults = [];
+
 const state = {
   currentView: "overview",
+  globalSearch: "",
   flowSearch: "",
   flowModalOpen: false,
   dbSearch: "",
   dbModalOpen: false,
+  noteSearch: "",
   controllerSearch: "",
   folder: "",
+  maintainNotes: [],
   selectedFlowId: "",
   selectedDbClass: "",
   selectedController: "",
@@ -311,6 +317,21 @@ const els = {
   panels: Array.from(document.querySelectorAll("[data-panel]")),
   overviewMiniStats: document.getElementById("overviewMiniStats"),
   overviewGrid: document.getElementById("overviewGrid"),
+  globalSearchInput: document.getElementById("globalSearchInput"),
+  searchMiniStats: document.getElementById("searchMiniStats"),
+  searchResults: document.getElementById("searchResults"),
+  noteSearchInput: document.getElementById("noteSearchInput"),
+  noteMiniStats: document.getElementById("noteMiniStats"),
+  noteForm: document.getElementById("noteForm"),
+  noteTitleInput: document.getElementById("noteTitleInput"),
+  noteDateInput: document.getElementById("noteDateInput"),
+  noteAreaSelect: document.getElementById("noteAreaSelect"),
+  noteStatusSelect: document.getElementById("noteStatusSelect"),
+  notePathInput: document.getElementById("notePathInput"),
+  noteIssueInput: document.getElementById("noteIssueInput"),
+  noteFixInput: document.getElementById("noteFixInput"),
+  noteTagsInput: document.getElementById("noteTagsInput"),
+  noteTimelineList: document.getElementById("noteTimelineList"),
   flowSearchInput: document.getElementById("flowSearchInput"),
   flowMiniStats: document.getElementById("flowMiniStats"),
   flowList: document.getElementById("flowList"),
@@ -348,6 +369,70 @@ function escapeHtml(value) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function getTodayValue() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function createId(prefix = "item") {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function loadMaintainNotes() {
+  try {
+    const raw = localStorage.getItem(MAINTAIN_NOTE_STORAGE_KEY);
+    if (!raw) {
+      return [];
+    }
+
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed
+      .filter((item) => item && item.id && item.title)
+      .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+  } catch {
+    return [];
+  }
+}
+
+function saveMaintainNotes() {
+  try {
+    localStorage.setItem(MAINTAIN_NOTE_STORAGE_KEY, JSON.stringify(state.maintainNotes));
+  } catch {
+    // Bỏ qua nếu môi trường hiện tại không cho lưu localStorage.
+  }
+}
+
+function formatNoteDate(value) {
+  if (!value) {
+    return "Không rõ ngày";
+  }
+
+  const [year, month, day] = String(value).split("-");
+  if (!year || !month || !day) {
+    return value;
+  }
+
+  return `${day}-${month}-${year}`;
+}
+
+function getStatusTone(status) {
+  switch (status) {
+    case "Đã xử lý":
+      return "status-done";
+    case "Đang theo dõi":
+      return "status-watch";
+    default:
+      return "status-verify";
+  }
+}
+
+function tokenizeTags(value) {
+  return compactList(String(value || "").split(",").map((item) => item.trim()), 12);
 }
 
 function uniqueControllers() {
@@ -517,6 +602,7 @@ function buildAutoControllerFlows() {
 
 const controllers = uniqueControllers();
 const flows = [...flowDefinitions, ...buildAutoControllerFlows()];
+state.maintainNotes = loadMaintainNotes();
 if (!state.selectedController && controllers.length > 0) {
   state.selectedController = controllers[0].controller;
 }
@@ -550,6 +636,296 @@ function renderOverview() {
       </div>
     </article>
   `).join("");
+}
+
+function getFilteredNotes() {
+  const q = state.noteSearch.trim().toLowerCase();
+  if (!q) {
+    return state.maintainNotes;
+  }
+
+  return state.maintainNotes.filter((item) => {
+    const haystack = [
+      item.title,
+      item.area,
+      item.status,
+      item.path,
+      item.issue,
+      item.fix,
+      ...(item.tags || [])
+    ].join(" ").toLowerCase();
+
+    return haystack.includes(q);
+  });
+}
+
+function renderNoteMiniStats() {
+  const filtered = getFilteredNotes();
+  const openCount = filtered.filter((item) => item.status !== "Đã xử lý").length;
+  els.noteMiniStats.innerHTML = [
+    ["Note", filtered.length],
+    ["Cần xem", openCount]
+  ].map(([label, value]) => `
+    <article class="mini-stat">
+      <p class="mini-stat-label">${escapeHtml(label)}</p>
+      <p class="mini-stat-value">${escapeHtml(value)}</p>
+    </article>
+  `).join("");
+}
+
+function renderTimeline() {
+  const filtered = getFilteredNotes();
+  renderNoteMiniStats();
+
+  if (!filtered.length) {
+    els.noteTimelineList.innerHTML = `<div class="empty">Chưa có note lỗi nào. Hãy thêm note đầu tiên cho team maintain.</div>`;
+    return;
+  }
+
+  els.noteTimelineList.innerHTML = filtered.map((item) => `
+    <article class="note-card">
+      <div class="note-card-head">
+        <div>
+          <p class="panel-box-kicker">${escapeHtml(item.area || "Tổng quát")}</p>
+          <h4>${escapeHtml(item.title)}</h4>
+        </div>
+        <div class="note-card-meta">
+          <span class="status-pill ${escapeHtml(getStatusTone(item.status))}">${escapeHtml(item.status || "Cần xác minh")}</span>
+          <span class="path-pill">${escapeHtml(formatNoteDate(item.date))}</span>
+        </div>
+      </div>
+      ${item.path ? `<p class="meta">Điểm chạm: ${escapeHtml(item.path)}</p>` : ""}
+      <div class="note-section">
+        <strong>Lỗi:</strong>
+        <p>${escapeHtml(item.issue)}</p>
+      </div>
+      <div class="note-section">
+        <strong>Cách sửa:</strong>
+        <p>${escapeHtml(item.fix)}</p>
+      </div>
+      ${item.tags && item.tags.length ? `
+        <div class="pill-list">
+          ${item.tags.map((tag) => `<span class="overview-pill">${escapeHtml(tag)}</span>`).join("")}
+        </div>
+      ` : ""}
+      <div class="note-card-actions">
+        <button class="ghost-btn" type="button" data-note-delete="${escapeHtml(item.id)}">Xóa note</button>
+      </div>
+    </article>
+  `).join("");
+
+  for (const button of els.noteTimelineList.querySelectorAll("[data-note-delete]")) {
+    button.addEventListener("click", () => {
+      state.maintainNotes = state.maintainNotes.filter((item) => item.id !== button.dataset.noteDelete);
+      saveMaintainNotes();
+      render();
+    });
+  }
+}
+
+function buildSearchResults() {
+  const q = state.globalSearch.trim().toLowerCase();
+  if (!q) {
+    return [];
+  }
+
+  const results = [];
+
+  for (const section of overviewSections) {
+    const haystack = [section.title, section.summary, ...(section.items || [])].join(" ").toLowerCase();
+    if (haystack.includes(q)) {
+      results.push({
+        kind: "overview",
+        typeLabel: "Tổng quan",
+        title: section.title,
+        summary: section.summary,
+        refs: section.items || [],
+        actionText: "Mở tổng quan"
+      });
+    }
+  }
+
+  for (const flow of flows) {
+    const haystack = [flow.name, flow.area, flow.summary, flow.screen, flow.endpoint, ...(flow.keywords || [])].join(" ").toLowerCase();
+    if (haystack.includes(q)) {
+      results.push({
+        kind: "flow",
+        key: flow.id,
+        typeLabel: "Luồng",
+        title: flow.name,
+        summary: flow.summary,
+        refs: compactList([flow.screen, flow.endpoint, ...(flow.files || [])], 5),
+        actionText: "Mở luồng"
+      });
+    }
+  }
+
+  for (const controller of controllers) {
+    const haystack = [controller.controller, controller.folder].join(" ").toLowerCase();
+    if (haystack.includes(q)) {
+      results.push({
+        kind: "controller",
+        key: controller.controller,
+        typeLabel: "Controller",
+        title: controller.controller,
+        summary: `${controller.folder} | ${controller.actionCount} action | ${controller.viewCount} view tồn tại`,
+        refs: [],
+        actionText: "Mở controller"
+      });
+    }
+  }
+
+  for (const item of report.items || []) {
+    const haystack = [
+      item.controller,
+      item.action,
+      item.route,
+      item.viewPath,
+      item.controllerFile,
+      ...(item.jsRefs || []),
+      ...(item.fetchSnippets || [])
+    ].join(" ").toLowerCase();
+
+    if (haystack.includes(q)) {
+      results.push({
+        kind: "action",
+        key: `${item.controller}::${item.action}`,
+        controller: item.controller,
+        typeLabel: "Action / View",
+        title: `${item.controller} :: ${item.action}`,
+        summary: `${item.route} | ${item.viewExists ? "Có view" : "Chưa thấy view"}`,
+        refs: compactList([item.viewPath, ...(item.jsRefs || []), ...(item.fetchSnippets || [])], 5),
+        actionText: "Mở action"
+      });
+    }
+  }
+
+  for (const dbClass of dbStructure.classes || []) {
+    const haystack = [
+      dbClass.name,
+      ...(dbClass.relations || []).map((item) => `${item.relatedClass} ${item.foreignKey} ${item.navigation} ${item.label}`)
+    ].join(" ").toLowerCase();
+
+    if (haystack.includes(q)) {
+      results.push({
+        kind: "db",
+        key: dbClass.name,
+        typeLabel: "DB Class",
+        title: dbClass.name,
+        summary: `${dbClass.relationCount} quan hệ | ${dbClass.oneToManyCount} x 1-n | ${dbClass.manyToOneCount} x n-1`,
+        refs: compactList((dbClass.relations || []).map((item) => item.relatedClass), 5),
+        actionText: "Mở DB"
+      });
+    }
+  }
+
+  for (const note of state.maintainNotes) {
+    const haystack = [
+      note.title,
+      note.area,
+      note.path,
+      note.issue,
+      note.fix,
+      ...(note.tags || [])
+    ].join(" ").toLowerCase();
+
+    if (haystack.includes(q)) {
+      results.push({
+        kind: "note",
+        key: note.id,
+        typeLabel: "Note lỗi",
+        title: note.title,
+        summary: `${note.area} | ${note.status} | ${formatNoteDate(note.date)}`,
+        refs: compactList([note.path, ...(note.tags || [])], 5),
+        actionText: "Mở timeline"
+      });
+    }
+  }
+
+  return results.slice(0, 160);
+}
+
+function renderSearch() {
+  const query = state.globalSearch.trim();
+  currentSearchResults = buildSearchResults();
+
+  const groups = new Set(currentSearchResults.map((item) => item.typeLabel)).size;
+  els.searchMiniStats.innerHTML = [
+    ["Kết quả", currentSearchResults.length],
+    ["Nhóm", groups]
+  ].map(([label, value]) => `
+    <article class="mini-stat">
+      <p class="mini-stat-label">${escapeHtml(label)}</p>
+      <p class="mini-stat-value">${escapeHtml(value)}</p>
+    </article>
+  `).join("");
+
+  if (!query) {
+    els.searchResults.innerHTML = `<div class="empty search-empty">Nhập từ khóa để tìm qua flow, controller, action, view, JS, DB class và note lỗi.</div>`;
+    return;
+  }
+
+  if (!currentSearchResults.length) {
+    els.searchResults.innerHTML = `<div class="empty search-empty">Không tìm thấy kết quả nào cho từ khóa này.</div>`;
+    return;
+  }
+
+  els.searchResults.innerHTML = currentSearchResults.map((item, index) => `
+    <article class="search-result-card">
+      <div class="search-result-head">
+        <span class="relation-type">${escapeHtml(item.typeLabel)}</span>
+        <button class="ghost-btn" type="button" data-search-result="${index}">${escapeHtml(item.actionText)}</button>
+      </div>
+      <h4>${escapeHtml(item.title)}</h4>
+      <p>${escapeHtml(item.summary)}</p>
+      ${item.refs && item.refs.length ? `
+        <div class="search-ref-list">
+          ${item.refs.map((ref) => `<span class="path-pill">${escapeHtml(ref)}</span>`).join("")}
+        </div>
+      ` : ""}
+    </article>
+  `).join("");
+
+  for (const button of els.searchResults.querySelectorAll("[data-search-result]")) {
+    button.addEventListener("click", () => {
+      const result = currentSearchResults[Number(button.dataset.searchResult)];
+      if (!result) {
+        return;
+      }
+
+      state.flowModalOpen = false;
+      state.dbModalOpen = false;
+
+      if (result.kind === "overview") {
+        state.currentView = "overview";
+      } else if (result.kind === "flow") {
+        state.currentView = "flows";
+        state.selectedFlowId = result.key || "";
+        state.flowModalOpen = true;
+      } else if (result.kind === "db") {
+        state.currentView = "db";
+        state.selectedDbClass = result.key || "";
+        state.dbModalOpen = true;
+      } else if (result.kind === "controller") {
+        state.currentView = "controllers";
+        state.selectedController = result.key || "";
+      } else if (result.kind === "action") {
+        state.currentView = "controllers";
+        state.selectedController = result.controller || "";
+      } else if (result.kind === "note") {
+        state.currentView = "timeline";
+      }
+
+      render();
+    });
+  }
+}
+
+function resetNoteForm() {
+  els.noteForm.reset();
+  els.noteDateInput.value = getTodayValue();
+  els.noteAreaSelect.value = "Tổng quát";
+  els.noteStatusSelect.value = "Đã xử lý";
 }
 
 function getVisibleFlows() {
@@ -1085,6 +1461,8 @@ function renderRows(items) {
 function render() {
   syncNavigation();
   renderOverview();
+  renderSearch();
+  renderTimeline();
   renderFlowList();
   renderFlowModal();
   renderDbClassList();
@@ -1111,6 +1489,48 @@ for (const item of els.navItems) {
     render();
   });
 }
+
+els.globalSearchInput.addEventListener("input", (event) => {
+  state.globalSearch = event.target.value;
+  render();
+});
+
+els.noteSearchInput.addEventListener("input", (event) => {
+  state.noteSearch = event.target.value;
+  render();
+});
+
+els.noteForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const title = els.noteTitleInput.value.trim();
+  const issue = els.noteIssueInput.value.trim();
+  const fix = els.noteFixInput.value.trim();
+
+  if (!title || !issue || !fix) {
+    return;
+  }
+
+  state.maintainNotes = [
+    {
+      id: createId("note"),
+      title,
+      date: els.noteDateInput.value || getTodayValue(),
+      area: els.noteAreaSelect.value || "Tổng quát",
+      status: els.noteStatusSelect.value || "Đã xử lý",
+      path: els.notePathInput.value.trim(),
+      issue,
+      fix,
+      tags: tokenizeTags(els.noteTagsInput.value)
+    },
+    ...state.maintainNotes
+  ].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+
+  saveMaintainNotes();
+  resetNoteForm();
+  state.currentView = "timeline";
+  render();
+});
 
 els.flowSearchInput.addEventListener("input", (event) => {
   state.flowSearch = event.target.value;
@@ -1169,5 +1589,6 @@ els.viewExistsOnly.addEventListener("change", (event) => {
   render();
 });
 
+resetNoteForm();
 populateFolderFilter();
 render();

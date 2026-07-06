@@ -18,6 +18,14 @@
           <span class="nav-kicker">Tổng quan</span>
           <span class="nav-label">Tổng quan dự án</span>
         </button>
+        <button class="nav-item" type="button" data-view="search">
+          <span class="nav-kicker">Tra cứu</span>
+          <span class="nav-label">Search toàn cục</span>
+        </button>
+        <button class="nav-item" type="button" data-view="timeline">
+          <span class="nav-kicker">Maintain</span>
+          <span class="nav-label">Note lỗi</span>
+        </button>
         <button class="nav-item" type="button" data-view="flows">
           <span class="nav-kicker">Truy vết</span>
           <span class="nav-label">Luồng truy vết chức năng</span>
@@ -44,6 +52,122 @@
         </div>
 
         <section class="overview-grid" id="overviewGrid"></section>
+      </section>
+
+      <section class="content-panel" data-panel="search">
+        <section class="toolbar">
+          <label class="search-box">
+            <span>Tìm toàn cục</span>
+            <input id="globalSearchInput" type="search" placeholder="VD: XuatExcel, DmBenhNhan, HT_DangNhap, VC_HangTonKho">
+          </label>
+        </section>
+
+        <section class="db-workspace">
+          <div class="browser-panel db-browser-panel">
+            <div class="panel-box-head">
+              <div>
+                <p class="panel-box-kicker">Search</p>
+                <h3>Kết quả tra cứu toàn cục</h3>
+                <p class="detail-intro">Tra chéo giữa flow, controller, action, view, JS, DB class và note lỗi.</p>
+              </div>
+              <div class="mini-stats" id="searchMiniStats"></div>
+            </div>
+            <div class="search-results-grid" id="searchResults"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="content-panel" data-panel="timeline">
+        <section class="toolbar">
+          <label class="search-box">
+            <span>Tìm note lỗi</span>
+            <input id="noteSearchInput" type="search" placeholder="VD: excel, login, route, timeout">
+          </label>
+        </section>
+
+        <section class="timeline-grid">
+          <div class="browser-panel note-form-panel">
+            <div class="panel-box-head">
+              <div>
+                <p class="panel-box-kicker">Maintain</p>
+                <h3>Thêm note lỗi</h3>
+                <p class="detail-intro">Lưu lỗi đã gặp, nguyên nhân và cách sửa để team tra lại sau này.</p>
+              </div>
+              <div class="mini-stats" id="noteMiniStats"></div>
+            </div>
+
+            <form id="noteForm" class="note-form-grid">
+              <label>
+                <span>Tiêu đề lỗi</span>
+                <input id="noteTitleInput" type="text" placeholder="VD: Xuất Excel tồn kho lỗi file trắng" required>
+              </label>
+
+              <label>
+                <span>Ngày</span>
+                <input id="noteDateInput" type="date" required>
+              </label>
+
+              <label>
+                <span>Khu vực</span>
+                <select id="noteAreaSelect">
+                  <option value="Tổng quát">Tổng quát</option>
+                  <option value="Hệ thống">Hệ thống</option>
+                  <option value="BaoCao">BaoCao</option>
+                  <option value="CLS">CLS</option>
+                  <option value="HangHoa">HangHoa</option>
+                  <option value="QuanLy">QuanLy</option>
+                  <option value="DanhMuc">DanhMuc</option>
+                  <option value="DB">DB</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Trạng thái</span>
+                <select id="noteStatusSelect">
+                  <option value="Đã xử lý">Đã xử lý</option>
+                  <option value="Đang theo dõi">Đang theo dõi</option>
+                  <option value="Cần xác minh">Cần xác minh</option>
+                </select>
+              </label>
+
+              <label class="note-form-span-2">
+                <span>File / path / endpoint liên quan</span>
+                <input id="notePathInput" type="text" placeholder="VD: Controllers/VC_HangTonKhoController.cs | /HangHoa/VC_HangTonKho/download/BaoCaoTongHopExcel">
+              </label>
+
+              <label class="note-form-span-2">
+                <span>Mô tả lỗi</span>
+                <textarea id="noteIssueInput" rows="4" placeholder="Mô tả hiện tượng lỗi, khi nào xảy ra..." required></textarea>
+              </label>
+
+              <label class="note-form-span-2">
+                <span>Cách sửa / ghi chú</span>
+                <textarea id="noteFixInput" rows="4" placeholder="Đã sửa ở đâu, lưu ý gì, nguyên nhân gốc..." required></textarea>
+              </label>
+
+              <label class="note-form-span-2">
+                <span>Tag</span>
+                <input id="noteTagsInput" type="text" placeholder="VD: excel, ajax, timeout, permission">
+              </label>
+
+              <div class="note-form-actions note-form-span-2">
+                <button class="primary-btn" type="submit">Lưu note</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="detail-panel note-list-panel">
+            <div class="detail-head">
+              <div>
+                <p class="panel-box-kicker">Timeline</p>
+                <h3>Timeline maintain</h3>
+                <p class="detail-intro">Các lỗi đã gặp và cách xử lý theo thời gian.</p>
+              </div>
+            </div>
+
+            <div class="timeline-list" id="noteTimelineList"></div>
+          </div>
+        </section>
       </section>
 
       <section class="content-panel" data-panel="flows">
