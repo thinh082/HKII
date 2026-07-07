@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bản đồ View HTTPGet</title>
-  <link rel="stylesheet" href="../../../HisSoft/wwwroot/dist/css/CSS0601/tom-select.bootstrap5.min.css">
+  <link rel="stylesheet" href="./JS/tom-select.bootstrap5.min.css">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -321,12 +321,77 @@
                 <div class="sql-section-head">
                   <div>
                     <p class="panel-box-kicker">Bước 6</p>
+                    <h4>Tùy chọn SELECT và alias</h4>
+                  </div>
+                </div>
+                <div class="sql-option-grid">
+                  <label class="sql-toggle-card">
+                    <input id="sqlDistinctToggle" type="checkbox">
+                    <span>Dùng DISTINCT</span>
+                  </label>
+                  <label class="sql-toggle-card sql-toggle-card-inline">
+                    <input id="sqlTopToggle" type="checkbox">
+                    <span>Dùng TOP</span>
+                    <input id="sqlTopValueInput" type="number" min="1" step="1" placeholder="VD: 10">
+                  </label>
+                </div>
+                <div class="sql-alias-config-list" id="sqlAliasConfigList"></div>
+              </section>
+
+              <section class="sql-section">
+                <div class="sql-section-head">
+                  <div>
+                    <p class="panel-box-kicker">Bước 7</p>
+                    <h4>Aggregate và GROUP BY</h4>
+                  </div>
+                  <div class="sql-section-actions">
+                    <button class="ghost-btn" id="sqlAddAggregateButton" type="button">Thêm aggregate</button>
+                  </div>
+                </div>
+                <label class="sql-inline-field">
+                  <span>Cột GROUP BY thêm</span>
+                  <select id="sqlGroupBySelect" multiple></select>
+                </label>
+                <div class="sql-aggregate-list" id="sqlAggregateList"></div>
+              </section>
+
+              <section class="sql-section">
+                <div class="sql-section-head">
+                  <div>
+                    <p class="panel-box-kicker">Bước 8</p>
+                    <h4>HAVING</h4>
+                  </div>
+                  <div class="sql-section-actions">
+                    <button class="ghost-btn" id="sqlAddHavingButton" type="button">Thêm HAVING</button>
+                  </div>
+                </div>
+                <div class="sql-having-list" id="sqlHavingList"></div>
+              </section>
+
+              <section class="sql-section">
+                <div class="sql-section-head">
+                  <div>
+                    <p class="panel-box-kicker">Bước 9</p>
+                    <h4>ORDER BY</h4>
+                  </div>
+                  <div class="sql-section-actions">
+                    <button class="ghost-btn" id="sqlAddOrderButton" type="button">Thêm ORDER BY</button>
+                  </div>
+                </div>
+                <div class="sql-order-list" id="sqlOrderList"></div>
+              </section>
+
+              <section class="sql-section">
+                <div class="sql-section-head">
+                  <div>
+                    <p class="panel-box-kicker">Bước 10</p>
                     <h4>Câu SQL</h4>
                   </div>
                   <div class="sql-section-actions">
                     <button class="primary-btn" id="sqlCopyButton" type="button">Copy SQL</button>
                   </div>
                 </div>
+                <div class="sql-warning-list" id="sqlBuilderWarnings"></div>
                 <p class="meta" id="sqlCopyStatus">Sinh tự động từ bảng và quan hệ trong `db.sql`.</p>
                 <textarea id="sqlOutput" class="sql-output" rows="16" readonly></textarea>
               </section>
@@ -450,9 +515,9 @@
     </div>
   </div>
 
-  <script src="./data.js"></script>
-  <script src="./sql-schema.js"></script>
-  <script src="../../../HisSoft/wwwroot/dist/libs/tom-select/dist/js/tom-select.complete.min.js"></script>
-  <script src="./app.js"></script>
+  <script src="./JS/data.js"></script>
+  <script src="./JS/sql-schema.js"></script>
+  <script src="./JS/tom-select.complete.min.js"></script>
+  <script src="./JS/app.js"></script>
 </body>
 </html>

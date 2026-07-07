@@ -1263,6 +1263,126 @@ body.modal-open {
   gap: 8px;
 }
 
+.sql-option-grid,
+.sql-alias-config-list,
+.sql-aggregate-list,
+.sql-having-list,
+.sql-order-list,
+.sql-warning-list {
+  display: grid;
+  gap: 14px;
+}
+
+.sql-option-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 14px;
+}
+
+.sql-toggle-card,
+.sql-config-row,
+.sql-warning-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.sql-toggle-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+}
+
+.sql-toggle-card-inline {
+  justify-content: space-between;
+}
+
+.sql-toggle-card-inline input[type="number"] {
+  width: 140px;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fffefb;
+  color: var(--ink);
+  font: inherit;
+}
+
+.sql-inline-field {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.sql-inline-field select {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #fffefb;
+  color: var(--ink);
+  font: inherit;
+}
+
+.sql-config-row {
+  display: grid;
+  gap: 12px;
+}
+
+.sql-config-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.sql-config-grid-compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+}
+
+.sql-config-grid-wide {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) 160px minmax(180px, 1fr) auto;
+}
+
+.sql-config-grid select,
+.sql-config-grid input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fffefb;
+  color: var(--ink);
+  font: inherit;
+}
+
+.sql-config-grid input[type="checkbox"] {
+  width: auto;
+  height: auto;
+  padding: 0;
+}
+
+.sql-config-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sql-warning-card {
+  border-color: rgba(200, 120, 26, 0.18);
+  background: rgba(200, 120, 26, 0.08);
+}
+
+.sql-warning-card p {
+  margin: 0;
+  color: #8a5a0a;
+  line-height: 1.55;
+}
+
 .sql-table-list,
 .sql-columns-wrap,
 .sql-join-config-list,
@@ -1548,7 +1668,8 @@ body.modal-open {
   }
 
   .sql-selected-join-list,
-  .sql-column-list {
+  .sql-column-list,
+  .sql-option-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1592,13 +1713,25 @@ body.modal-open {
 
   .sql-selected-join-list,
   .sql-column-list,
-  .sql-where-row {
+  .sql-where-row,
+  .sql-config-grid,
+  .sql-config-grid-compact,
+  .sql-config-grid-wide,
+  .sql-option-grid {
     grid-template-columns: 1fr;
   }
 
   .sql-condition-toggle {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .sql-toggle-card-inline {
+    align-items: flex-start;
+  }
+
+  .sql-toggle-card-inline input[type="number"] {
+    width: 100%;
   }
 
   .overview-hero,
