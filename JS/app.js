@@ -1,6 +1,9 @@
 ﻿const report = window.__HTTPGET_VIEW_MAP__ || { items: [] };
 const dbStructure = report.dbStructure || { classes: [], edges: [] };
 const sqlSchema = window.__SQL_SCHEMA__ || { tables: [], relationships: [] };
+const NOTE_SAVE_ENDPOINT = "https://newproject-bnra.onrender.com/api/Test/LuuLoi";
+const NOTE_LIST_ENDPOINT = "https://newproject-bnra.onrender.com/api/Test/InLoi";
+const NOTE_DELETE_ENDPOINT = "https://newproject-bnra.onrender.com/api/Test/XoaNote";
 
 function makeSqlTableKey(schemaName, tableName) {
   return `${schemaName}.${tableName}`;
@@ -312,6 +315,7 @@ let sqlBaseTomSelect = null;
 let sqlJoinTomSelect = null;
 let sqlBaseColumnTomSelect = null;
 const sqlJoinColumnTomSelects = new Map();
+let sqlProcedureParameterTomSelect = null;
 let currentSearchResults = [];
 
 const state = {
@@ -323,11 +327,24 @@ const state = {
   dbModalOpen: false,
   sqlBaseTable: "",
   sqlSelectedTables: [],
+  sqlJoinParentHints: {},
+  sqlJoinRelationHints: {},
   sqlJoinTypes: {},
   sqlSelectedColumns: [],
   sqlDistinctEnabled: false,
   sqlTopEnabled: false,
   sqlTopValue: "",
+  sqlUseTempTable: false,
+  sqlTempTableName: "#TempResult",
+  sqlTempIndexEnabled: false,
+  sqlTempIndexColumns: [],
+  sqlPaginationEnabled: false,
+  sqlPaginationPageNumber: "1",
+  sqlPaginationPageSize: "20",
+  sqlPaginationOrderKey: "",
+  sqlProcedureMode: false,
+  sqlProcedureName: "",
+  sqlProcedureExcludedConditionIds: [],
   sqlOrderRules: [],
   sqlGroupByColumns: [],
   sqlAggregateSelections: [],
@@ -342,6 +359,13 @@ const state = {
   controllerSearch: "",
   folder: "",
   maintainNotes: [],
+  maintainNotesLocal: [],
+  maintainNotesRemoteLoaded: false,
+  maintainNotesRemoteLoading: false,
+  noteDeletingIds: [],
+  noteSubmitStatus: "",
+  noteSubmitStatusType: "",
+  noteSubmitting: false,
   selectedFlowId: "",
   selectedDbClass: "",
   selectedController: "",
@@ -368,6 +392,8 @@ const els = {
   noteFixInput: document.getElementById("noteFixInput"),
   noteTagsInput: document.getElementById("noteTagsInput"),
   noteTimelineList: document.getElementById("noteTimelineList"),
+  noteSubmitButton: document.getElementById("noteSubmitButton"),
+  noteSubmitStatus: document.getElementById("noteSubmitStatus"),
   flowSearchInput: document.getElementById("flowSearchInput"),
   flowMiniStats: document.getElementById("flowMiniStats"),
   flowList: document.getElementById("flowList"),
@@ -405,6 +431,8 @@ const els = {
   sqlDistinctToggle: document.getElementById("sqlDistinctToggle"),
   sqlTopToggle: document.getElementById("sqlTopToggle"),
   sqlTopValueInput: document.getElementById("sqlTopValueInput"),
+  sqlTempTableToggle: document.getElementById("sqlTempTableToggle"),
+  sqlTempConfigList: document.getElementById("sqlTempConfigList"),
   sqlAliasConfigList: document.getElementById("sqlAliasConfigList"),
   sqlGroupBySelect: document.getElementById("sqlGroupBySelect"),
   sqlAddAggregateButton: document.getElementById("sqlAddAggregateButton"),
@@ -418,6 +446,8 @@ const els = {
   sqlConditionBody: document.getElementById("sqlConditionBody"),
   sqlWhereList: document.getElementById("sqlWhereList"),
   sqlRawWhereInput: document.getElementById("sqlRawWhereInput"),
+  sqlProcedureModeButton: document.getElementById("sqlProcedureModeButton"),
+  sqlProcedureConfig: document.getElementById("sqlProcedureConfig"),
   sqlCopyButton: document.getElementById("sqlCopyButton"),
   sqlBuilderWarnings: document.getElementById("sqlBuilderWarnings"),
   sqlCopyStatus: document.getElementById("sqlCopyStatus"),
@@ -471,10 +501,95 @@ function loadMaintainNotes() {
 
 function saveMaintainNotes() {
   try {
-    localStorage.setItem(MAINTAIN_NOTE_STORAGE_KEY, JSON.stringify(state.maintainNotes));
+    localStorage.setItem(MAINTAIN_NOTE_STORAGE_KEY, JSON.stringify(state.maintainNotesLocal));
   } catch {
     // Bỏ qua nếu môi trường hiện tại không cho lưu localStorage.
   }
+}
+
+function isApiPersistedNoteId(noteId) {
+  return /^\d+$/.test(String(noteId || "").trim());
+}
+
+function normalizeMaintainNote(item) {
+  if (!item) {
+    return null;
+  }
+
+  const id = item.id ?? item.noteId ?? createId("note");
+  const title = String(item.title || "").trim();
+  if (!title) {
+    return null;
+  }
+
+  return {
+    id: String(id),
+    title,
+    date: String(item.date || item.ngaythang || getTodayValue()),
+    area: String(item.area || "Tổng quát"),
+    status: String(item.status || "Cần xác minh"),
+    path: String(item.path || item.link || ""),
+    issue: String(item.issue || item.description || ""),
+    fix: String(item.fix || item.note || ""),
+    tags: Array.isArray(item.tags) ? tokenizeTags(item.tags.join(", ")) : tokenizeTags(item.tags || "")
+  };
+}
+
+async function fetchMaintainNotesFromApi({ silent = false } = {}) {
+  if (state.maintainNotesRemoteLoading) {
+    return;
+  }
+
+  state.maintainNotesRemoteLoading = true;
+  if (!silent) {
+    render();
+  }
+
+  try {
+    const response = await fetch(NOTE_LIST_ENDPOINT, {
+      method: "GET",
+      headers: {
+        Accept: "application/json"
+      }
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = await response.json();
+    const remoteNotes = Array.isArray(payload)
+      ? payload.map(normalizeMaintainNote).filter(Boolean)
+      : [];
+
+    state.maintainNotes = remoteNotes
+      .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+    state.maintainNotesRemoteLoaded = true;
+  } catch (error) {
+    state.maintainNotes = [...state.maintainNotesLocal];
+    state.maintainNotesRemoteLoaded = false;
+    if (!silent) {
+      state.noteSubmitStatus = `Không tải được timeline từ API: ${error instanceof Error ? error.message : "Lỗi không xác định"}`;
+      state.noteSubmitStatusType = "error";
+    }
+  } finally {
+    state.maintainNotesRemoteLoading = false;
+    render();
+  }
+}
+
+async function deleteMaintainNoteFromApi(noteId) {
+  const response = await fetch(`${NOTE_DELETE_ENDPOINT}?id=${encodeURIComponent(noteId)}`, {
+    method: "POST",
+    headers: {
+      Accept: "text/plain"
+    }
+  });
+  const responseText = (await response.text()).trim();
+  if (!response.ok) {
+    throw new Error(responseText || `HTTP ${response.status}`);
+  }
+
+  return responseText || "Xoa thanh cong";
 }
 
 function formatNoteDate(value) {
@@ -733,6 +848,10 @@ function getSqlDefaultAggregateAlias(functionName, tableName, columnName) {
   return `${functionName}_${suffix}`;
 }
 
+function getSqlDefaultProcedureName(baseTableName) {
+  return `sp_Builder_${baseTableName || "Query"}`;
+}
+
 function buildResolvedSqlAliasMap(baseKey, includedKeys, pathMap, warnings) {
   const fallbackAliasMap = buildSqlAliasMap(baseKey, includedKeys, pathMap);
   const resolvedAliasMap = new Map();
@@ -800,6 +919,153 @@ function buildSqlShortestPaths(baseKey) {
   }
 
   return pathMap;
+}
+
+function getSqlDirectEdges(fromKey, toKey) {
+  return (sqlAdjacency.get(fromKey) || []).filter((edge) => edge.nextKey === toKey);
+}
+
+function getSqlRelationStateId(relation) {
+  return String(relation?.id || relation?.constraint || "");
+}
+
+function chooseSqlJoinEdge(fromKey, toKey, relationHint = "") {
+  const edges = getSqlDirectEdges(fromKey, toKey);
+  if (!edges.length) {
+    return null;
+  }
+
+  if (relationHint) {
+    const matchedEdge = edges.find((edge) => getSqlRelationStateId(edge.relation) === relationHint);
+    if (matchedEdge) {
+      return matchedEdge;
+    }
+  }
+
+  return edges[0];
+}
+
+function getSqlEdgeRelationLabel(sourceKey, targetKey, relation) {
+  const relationFromKey = makeSqlTableKey(relation.fromSchema, relation.fromTable);
+  const relationToKey = makeSqlTableKey(relation.toSchema, relation.toTable);
+  const sourceTableName = getSqlTable(sourceKey)?.name || sourceKey;
+  const targetTableName = getSqlTable(targetKey)?.name || targetKey;
+  const sourceColumns = relationFromKey === sourceKey ? (relation.fromColumns || []) : (relation.toColumns || []);
+  const targetColumns = relationToKey === targetKey ? (relation.toColumns || []) : (relation.fromColumns || []);
+
+  return `${sourceTableName}.${sourceColumns.join(", ")} -> ${targetTableName}.${targetColumns.join(", ")}`;
+}
+
+function buildSqlSelectedPathMap(baseKey, selectedTableKeys, parentHints = {}, relationHints = {}) {
+  const resolvedPathMap = new Map();
+  const fallbackPathMap = buildSqlShortestPaths(baseKey);
+
+  if (!baseKey) {
+    return { resolvedPathMap, fallbackPathMap };
+  }
+
+  resolvedPathMap.set(baseKey, []);
+
+  for (const tableKey of uniqueValues(selectedTableKeys || [])) {
+    if (!tableKey || tableKey === baseKey) {
+      continue;
+    }
+
+    let resolvedPath = null;
+    const preferredSourceKey = parentHints[tableKey] || "";
+    if (preferredSourceKey && preferredSourceKey !== tableKey && resolvedPathMap.has(preferredSourceKey)) {
+      const chosenEdge = chooseSqlJoinEdge(preferredSourceKey, tableKey, relationHints[tableKey] || "");
+      if (chosenEdge) {
+        resolvedPath = [
+          ...(resolvedPathMap.get(preferredSourceKey) || []),
+          {
+            fromKey: preferredSourceKey,
+            toKey: tableKey,
+            travel: chosenEdge.travel,
+            relation: chosenEdge.relation
+          }
+        ];
+      }
+    }
+
+    if (!resolvedPath) {
+      const fallbackPath = fallbackPathMap.get(tableKey) || [];
+      if (fallbackPath.length) {
+        resolvedPath = fallbackPath;
+      }
+    }
+
+    if (!resolvedPath) {
+      continue;
+    }
+
+    resolvedPathMap.set(tableKey, resolvedPath);
+    for (let index = 0; index < resolvedPath.length; index += 1) {
+      const prefixPath = resolvedPath.slice(0, index + 1);
+      const step = resolvedPath[index];
+      const currentResolved = resolvedPathMap.get(step.toKey);
+      if (!currentResolved || prefixPath.length < currentResolved.length) {
+        resolvedPathMap.set(step.toKey, prefixPath);
+      }
+    }
+  }
+
+  return { resolvedPathMap, fallbackPathMap };
+}
+
+function getSqlAttachSourceOptions(baseKey, targetTableKey, selectedTableKeys) {
+  const orderedKeys = [baseKey, ...uniqueValues(selectedTableKeys || [])];
+  const targetIndex = orderedKeys.indexOf(targetTableKey);
+  const candidateKeys = targetIndex >= 0 ? orderedKeys.slice(0, targetIndex) : orderedKeys;
+
+  return uniqueValues(candidateKeys)
+    .filter((tableKey) => tableKey && tableKey !== targetTableKey)
+    .filter((tableKey) => getSqlDirectEdges(tableKey, targetTableKey).length)
+    .map((tableKey) => ({
+      key: tableKey,
+      table: getSqlTable(tableKey)
+    }));
+}
+
+function getSqlDefaultAttachSource(baseKey, targetTableKey, selectedTableKeys) {
+  const orderedCandidates = [
+    ...uniqueValues(selectedTableKeys || []).filter((item) => item !== targetTableKey).reverse(),
+    baseKey
+  ].filter(Boolean);
+
+  return orderedCandidates.find((tableKey) => getSqlDirectEdges(tableKey, targetTableKey).length) || "";
+}
+
+function addSqlSelectedTable(tableKey) {
+  if (!tableKey || state.sqlSelectedTables.includes(tableKey)) {
+    return;
+  }
+
+  const baseKey = state.sqlBaseTable || sqlTables[0]?.fullName || "";
+  const defaultSourceKey = getSqlDefaultAttachSource(baseKey, tableKey, state.sqlSelectedTables);
+  state.sqlSelectedTables = uniqueValues([...state.sqlSelectedTables, tableKey]);
+
+  if (defaultSourceKey) {
+    state.sqlJoinParentHints[tableKey] = defaultSourceKey;
+    const chosenEdge = chooseSqlJoinEdge(defaultSourceKey, tableKey, state.sqlJoinRelationHints[tableKey] || "");
+    if (chosenEdge) {
+      state.sqlJoinRelationHints[tableKey] = getSqlRelationStateId(chosenEdge.relation);
+    }
+  }
+}
+
+function removeSqlSelectedTable(tableKey) {
+  state.sqlSelectedTables = state.sqlSelectedTables.filter((item) => item !== tableKey);
+  delete state.sqlJoinTypes[tableKey];
+  delete state.sqlJoinParentHints[tableKey];
+  delete state.sqlJoinRelationHints[tableKey];
+
+  for (const [targetKey, sourceKey] of Object.entries(state.sqlJoinParentHints)) {
+    if (sourceKey === tableKey) {
+      delete state.sqlJoinParentHints[targetKey];
+      delete state.sqlJoinRelationHints[targetKey];
+    }
+  }
 }
 
 function getSqlReachableEntries(baseKey) {
@@ -902,24 +1168,63 @@ function formatSqlLiteral(value, column) {
   return `'${escaped}'`;
 }
 
-function buildSqlConditionText(condition, aliasMap) {
+function buildSqlProcedureParameterName(tableName, columnName, usedNames) {
+  const baseName = `p_${String(tableName || "table").replace(/[^A-Za-z0-9_]+/g, "_")}_${String(columnName || "Column").replace(/[^A-Za-z0-9_]+/g, "_")}`
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  const seed = baseName || "p_Value";
+  let candidate = seed;
+  let index = 2;
+
+  while (usedNames.has(candidate.toLowerCase())) {
+    candidate = `${seed}_${index}`;
+    index += 1;
+  }
+
+  usedNames.add(candidate.toLowerCase());
+  return candidate;
+}
+
+function buildSqlConditionDetail(condition, aliasMap) {
   const table = getSqlTable(condition.tableKey);
   if (!table) {
-    return "";
+    return null;
   }
 
   const column = (table.columns || []).find((item) => item.name === condition.columnName);
   if (!column || !aliasMap.has(condition.tableKey)) {
-    return "";
+    return null;
   }
 
   const alias = aliasMap.get(condition.tableKey);
   const operator = condition.operator || "=";
   if (operator === "IS NULL" || operator === "IS NOT NULL") {
-    return `${formatSqlReference(alias, column.name)} ${operator}`;
+    return {
+      condition,
+      table,
+      column,
+      alias,
+      operator,
+      leftExpression: formatSqlReference(alias, column.name),
+      text: `${formatSqlReference(alias, column.name)} ${operator}`,
+      valueRequired: false
+    };
   }
 
-  return `${formatSqlReference(alias, column.name)} ${operator} ${formatSqlLiteral(condition.value, column)}`;
+  return {
+    condition,
+    table,
+    column,
+    alias,
+    operator,
+    leftExpression: formatSqlReference(alias, column.name),
+    text: `${formatSqlReference(alias, column.name)} ${operator} ${formatSqlLiteral(condition.value, column)}`,
+    valueRequired: true
+  };
+}
+
+function buildSqlConditionText(condition, aliasMap) {
+  return buildSqlConditionDetail(condition, aliasMap)?.text || "";
 }
 
 function buildSqlJoinCondition(step, aliasMap) {
@@ -942,16 +1247,39 @@ function buildSqlJoinCondition(step, aliasMap) {
   return parts.join(" AND ");
 }
 
+function isSqlManualJoinRelation(relation) {
+  return Boolean(
+    relation?.manual
+    || relation?.isManual
+    || relation?.relationType === "manual"
+    || relation?.joinSource === "manual"
+    || String(relation?.id || "").toLowerCase().startsWith("manual:")
+  );
+}
+
 function resetSqlBuilder(baseTableKey = "", keepBase = false) {
   const fallbackBase = baseTableKey || sqlTables[0]?.fullName || "";
 
   state.sqlBaseTable = keepBase ? (state.sqlBaseTable || fallbackBase) : fallbackBase;
   state.sqlSelectedTables = [];
+  state.sqlJoinParentHints = {};
+  state.sqlJoinRelationHints = {};
   state.sqlJoinTypes = {};
   state.sqlSelectedColumns = [];
   state.sqlDistinctEnabled = false;
   state.sqlTopEnabled = false;
   state.sqlTopValue = "";
+  state.sqlUseTempTable = false;
+  state.sqlTempTableName = "#TempResult";
+  state.sqlTempIndexEnabled = false;
+  state.sqlTempIndexColumns = [];
+  state.sqlPaginationEnabled = false;
+  state.sqlPaginationPageNumber = "1";
+  state.sqlPaginationPageSize = "20";
+  state.sqlPaginationOrderKey = "";
+  state.sqlProcedureMode = false;
+  state.sqlProcedureName = "";
+  state.sqlProcedureExcludedConditionIds = [];
   state.sqlOrderRules = [];
   state.sqlGroupByColumns = [];
   state.sqlAggregateSelections = [];
@@ -1092,7 +1420,8 @@ function buildAutoControllerFlows() {
 
 const controllers = uniqueControllers();
 const flows = [...flowDefinitions, ...buildAutoControllerFlows()];
-state.maintainNotes = loadMaintainNotes();
+state.maintainNotesLocal = loadMaintainNotes();
+state.maintainNotes = [...state.maintainNotesLocal];
 if (!state.selectedController && controllers.length > 0) {
   state.selectedController = controllers[0].controller;
 }
@@ -1157,7 +1486,8 @@ function renderNoteMiniStats() {
   const openCount = filtered.filter((item) => item.status !== "Đã xử lý").length;
   els.noteMiniStats.innerHTML = [
     ["Note", filtered.length],
-    ["Cần xem", openCount]
+    ["Cần xem", openCount],
+    ["Nguồn", state.maintainNotesRemoteLoaded ? "API" : "Local"]
   ].map(([label, value]) => `
     <article class="mini-stat">
       <p class="mini-stat-label">${escapeHtml(label)}</p>
@@ -1169,6 +1499,11 @@ function renderNoteMiniStats() {
 function renderTimeline() {
   const filtered = getFilteredNotes();
   renderNoteMiniStats();
+
+  if (state.maintainNotesRemoteLoading && !filtered.length) {
+    els.noteTimelineList.innerHTML = `<div class="empty">Đang tải timeline maintain từ API...</div>`;
+    return;
+  }
 
   if (!filtered.length) {
     els.noteTimelineList.innerHTML = `<div class="empty">Chưa có note lỗi nào. Hãy thêm note đầu tiên cho team maintain.</div>`;
@@ -1202,16 +1537,47 @@ function renderTimeline() {
         </div>
       ` : ""}
       <div class="note-card-actions">
-        <button class="ghost-btn" type="button" data-note-delete="${escapeHtml(item.id)}">Xóa note</button>
+        <button class="ghost-btn" type="button" data-note-delete="${escapeHtml(item.id)}" ${state.noteDeletingIds.includes(String(item.id)) ? "disabled" : ""}>
+          ${state.noteDeletingIds.includes(String(item.id)) ? "Đang xóa..." : "Xóa note"}
+        </button>
       </div>
     </article>
   `).join("");
 
   for (const button of els.noteTimelineList.querySelectorAll("[data-note-delete]")) {
-    button.addEventListener("click", () => {
-      state.maintainNotes = state.maintainNotes.filter((item) => item.id !== button.dataset.noteDelete);
-      saveMaintainNotes();
+    button.addEventListener("click", async () => {
+      const noteId = String(button.dataset.noteDelete || "");
+      if (!noteId || state.noteDeletingIds.includes(noteId)) {
+        return;
+      }
+
+      state.noteDeletingIds = uniqueValues([...state.noteDeletingIds, noteId]);
+      state.noteSubmitStatus = "";
+      state.noteSubmitStatusType = "";
       render();
+
+      try {
+        if (isApiPersistedNoteId(noteId)) {
+          const apiMessage = await deleteMaintainNoteFromApi(noteId);
+          state.noteSubmitStatus = `API: ${apiMessage}`;
+          state.noteSubmitStatusType = "success";
+          state.maintainNotesLocal = state.maintainNotesLocal.filter((item) => item.id !== noteId);
+          saveMaintainNotes();
+          await fetchMaintainNotesFromApi({ silent: true });
+        } else {
+          state.maintainNotes = state.maintainNotes.filter((item) => item.id !== noteId);
+          state.maintainNotesLocal = state.maintainNotesLocal.filter((item) => item.id !== noteId);
+          saveMaintainNotes();
+          state.noteSubmitStatus = "Đã xóa note local.";
+          state.noteSubmitStatusType = "success";
+        }
+      } catch (error) {
+        state.noteSubmitStatus = `Xóa note lỗi: ${error instanceof Error ? error.message : "Lỗi không xác định"}`;
+        state.noteSubmitStatusType = "error";
+      } finally {
+        state.noteDeletingIds = state.noteDeletingIds.filter((item) => item !== noteId);
+        render();
+      }
     });
   }
 }
@@ -1419,6 +1785,45 @@ function resetNoteForm() {
   els.noteDateInput.value = getTodayValue();
   els.noteAreaSelect.value = "Tổng quát";
   els.noteStatusSelect.value = "Đã xử lý";
+}
+
+function renderNoteSubmitState() {
+  if (!els.noteSubmitButton || !els.noteSubmitStatus) {
+    return;
+  }
+
+  els.noteSubmitButton.disabled = state.noteSubmitting;
+  els.noteSubmitButton.textContent = state.noteSubmitting ? "Đang lưu..." : "Lưu note";
+  els.noteSubmitStatus.textContent = state.noteSubmitStatus;
+  els.noteSubmitStatus.className = `note-form-status note-form-span-2${state.noteSubmitStatusType ? ` ${state.noteSubmitStatusType}` : ""}`;
+}
+
+async function saveMaintainNoteToApi(noteItem) {
+  const payload = {
+    id: 0,
+    title: noteItem.title || "",
+    ngaythang: noteItem.date || getTodayValue(),
+    area: noteItem.area || "",
+    status: noteItem.status || "",
+    link: noteItem.path || "",
+    description: noteItem.issue || "",
+    note: noteItem.fix || ""
+  };
+
+  const response = await fetch(NOTE_SAVE_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Accept: "text/plain",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+  const responseText = (await response.text()).trim();
+  if (!response.ok) {
+    throw new Error(responseText || `HTTP ${response.status}`);
+  }
+
+  return responseText || "Luu thanh cong";
 }
 
 function getVisibleFlows() {
@@ -1797,12 +2202,41 @@ function getSortedSqlTableKeys(tableKeys, pathMap, baseKey) {
 
 function getSqlBuilderModel() {
   const baseKey = state.sqlBaseTable || sqlTables[0]?.fullName || "";
-  const pathMap = buildSqlShortestPaths(baseKey);
   const reachableEntries = getSqlReachableEntries(baseKey);
   const reachableKeys = new Set(reachableEntries.map((item) => item.key));
   const warnings = [];
 
   state.sqlSelectedTables = uniqueValues(state.sqlSelectedTables).filter((item) => reachableKeys.has(item));
+  state.sqlJoinParentHints = Object.fromEntries(
+    Object.entries(state.sqlJoinParentHints).filter(([tableKey]) => state.sqlSelectedTables.includes(tableKey))
+  );
+  state.sqlJoinRelationHints = Object.fromEntries(
+    Object.entries(state.sqlJoinRelationHints).filter(([tableKey]) => state.sqlSelectedTables.includes(tableKey))
+  );
+  for (const tableKey of state.sqlSelectedTables) {
+    const sourceOptions = getSqlAttachSourceOptions(baseKey, tableKey, state.sqlSelectedTables);
+    const sourceKey = state.sqlJoinParentHints[tableKey] || "";
+    if (sourceKey && !sourceOptions.some((option) => option.key === sourceKey)) {
+      delete state.sqlJoinParentHints[tableKey];
+      delete state.sqlJoinRelationHints[tableKey];
+      continue;
+    }
+
+    if (!sourceKey) {
+      continue;
+    }
+
+    const relationId = state.sqlJoinRelationHints[tableKey] || "";
+    if (relationId && !getSqlDirectEdges(sourceKey, tableKey).some((edge) => getSqlRelationStateId(edge.relation) === relationId)) {
+      delete state.sqlJoinRelationHints[tableKey];
+    }
+  }
+  const { resolvedPathMap: pathMap } = buildSqlSelectedPathMap(
+    baseKey,
+    state.sqlSelectedTables,
+    state.sqlJoinParentHints,
+    state.sqlJoinRelationHints
+  );
 
   const includedKeys = getSortedSqlTableKeys(
     collectSqlIncludedTableKeys(baseKey, pathMap, state.sqlSelectedTables).filter((item) => sqlTableMap.has(item)),
@@ -1863,7 +2297,18 @@ function getSqlBuilderModel() {
         step,
         joinType: state.sqlJoinTypes[tableKey] || "LEFT JOIN",
         alias: aliasMap.get(tableKey) || "",
-        table: getSqlTable(tableKey)
+        table: getSqlTable(tableKey),
+        sourceKey: step.fromKey,
+        sourceTable: getSqlTable(step.fromKey),
+        isExplicitJoin: state.sqlSelectedTables.includes(tableKey),
+        attachSourceOptions: getSqlAttachSourceOptions(baseKey, tableKey, state.sqlSelectedTables),
+        selectedRelationId: getSqlRelationStateId(step.relation),
+        relationLabel: getSqlEdgeRelationLabel(step.fromKey, tableKey, step.relation),
+        relationOptions: getSqlDirectEdges(step.fromKey, tableKey).map((edge) => ({
+          id: getSqlRelationStateId(edge.relation),
+          relation: edge.relation,
+          label: getSqlEdgeRelationLabel(step.fromKey, tableKey, edge.relation)
+        }))
       };
     })
     .filter(Boolean);
@@ -2070,6 +2515,8 @@ function getSqlBuilderModel() {
   ];
   const orderTargetMap = new Map(orderTargets.map((item) => [item.stateKey, item]));
   const firstOrderTarget = orderTargets[0] || null;
+  const tempSelectableTargets = [...orderTargets];
+  const tempTargetMap = new Map(tempSelectableTargets.map((item) => [item.stateKey, item]));
 
   state.sqlOrderRules = (state.sqlOrderRules || [])
     .map((rule) => {
@@ -2094,6 +2541,11 @@ function getSqlBuilderModel() {
     })
     .filter(Boolean);
 
+  state.sqlTempIndexColumns = uniqueValues(state.sqlTempIndexColumns).filter((item) => tempTargetMap.has(item));
+  if (!tempTargetMap.has(state.sqlPaginationOrderKey)) {
+    state.sqlPaginationOrderKey = firstOrderTarget?.stateKey || "";
+  }
+
   const autoSelectGroupByEntries = groupingRequested && !selectedColumnEntries.length && !aggregateItems.length
     ? effectiveGroupByEntries.map((item) => {
       const fallbackAlias = getSqlDefaultColumnAlias(item.tableName, item.columnName);
@@ -2117,8 +2569,50 @@ function getSqlBuilderModel() {
     warnings.push("Đang tự đưa các cột GROUP BY vào SELECT vì bạn chưa chọn cột output nào.");
   }
 
+  const procedureEligibleConditions = state.sqlWhereConditions
+    .map((item) => buildSqlConditionDetail(item, aliasMap))
+    .filter((item) => item && item.valueRequired);
+  const procedureEligibleConditionMap = new Map(procedureEligibleConditions.map((item) => [item.condition.id, item]));
+  state.sqlProcedureExcludedConditionIds = uniqueValues(state.sqlProcedureExcludedConditionIds)
+    .filter((item) => procedureEligibleConditionMap.has(item));
+  const selectedProcedureConditionIds = procedureEligibleConditions
+    .map((item) => item.condition.id)
+    .filter((item) => !state.sqlProcedureExcludedConditionIds.includes(item));
+
+  const procedureParamNameUsed = new Set();
+  const procedureParameterDefinitions = selectedProcedureConditionIds
+    .map((conditionId) => {
+      const detail = procedureEligibleConditionMap.get(conditionId);
+      if (!detail) {
+        return null;
+      }
+
+      const parameterName = buildSqlProcedureParameterName(detail.table.name, detail.column.name, procedureParamNameUsed);
+      return {
+        conditionId,
+        parameterName,
+        sqlType: detail.column.type,
+        tableName: detail.table.name,
+        columnName: detail.column.name
+      };
+    })
+    .filter(Boolean);
+  const procedureParameterMap = new Map(procedureParameterDefinitions.map((item) => [item.conditionId, item]));
+
   const whereParts = state.sqlWhereConditions
-    .map((item) => buildSqlConditionText(item, aliasMap))
+    .map((item) => {
+      const detail = buildSqlConditionDetail(item, aliasMap);
+      if (!detail) {
+        return "";
+      }
+
+      const parameter = state.sqlProcedureMode ? procedureParameterMap.get(item.id) : null;
+      if (!parameter) {
+        return detail.text;
+      }
+
+      return `${detail.leftExpression} ${detail.operator} @${parameter.parameterName}`;
+    })
     .filter(Boolean);
   if (!state.sqlConditionEnabled) {
     whereParts.length = 0;
@@ -2187,6 +2681,10 @@ function getSqlBuilderModel() {
       continue;
     }
 
+    if (isSqlManualJoinRelation(join.step?.relation)) {
+      sqlLines.push("-- Chưa nối FK");
+    }
+
     sqlLines.push(`${join.joinType} ${getSqlTableLabel(join.tableKey)} AS ${formatSqlIdentifier(join.alias)} ON ${joinCondition}`);
   }
 
@@ -2207,6 +2705,94 @@ function getSqlBuilderModel() {
     sqlLines.push(`ORDER BY ${orderParts.join(",\n  ")}`);
   }
 
+  const baseQuerySql = sqlLines.join("\n");
+  let finalSqlText = baseQuerySql;
+  let paginationApplied = false;
+  const tempTableName = String(state.sqlTempTableName || "#TempResult").trim() || "#TempResult";
+  const paginationOrderTarget = tempTargetMap.get(state.sqlPaginationOrderKey);
+  const paginationPageNumber = Math.max(1, Number.parseInt(state.sqlPaginationPageNumber, 10) || 1);
+  const paginationPageSize = Math.max(1, Number.parseInt(state.sqlPaginationPageSize, 10) || 20);
+  const paginationOffset = (paginationPageNumber - 1) * paginationPageSize;
+
+  if (state.sqlPaginationEnabled && !paginationOrderTarget) {
+    warnings.push("Phân trang đang bật nhưng chưa có cột ORDER BY hợp lệ để phân trang.");
+  }
+
+  if (state.sqlUseTempTable) {
+    const baseWithoutOrderParts = orderParts.length ? sqlLines.slice(0, -1) : [...sqlLines];
+    const tempSelectSql = [
+      baseWithoutOrderParts[0] || "SELECT",
+      baseWithoutOrderParts[1] || "  *",
+      `INTO ${tempTableName}`,
+      ...baseWithoutOrderParts.slice(2)
+    ].join("\n");
+    const tempSqlLines = [
+      `IF OBJECT_ID('tempdb..${tempTableName}') IS NOT NULL DROP TABLE ${tempTableName};`,
+      "",
+      `${tempSelectSql};`
+    ];
+
+    if (state.sqlTempIndexEnabled) {
+      if (state.sqlTempIndexColumns.length) {
+        const indexColumns = state.sqlTempIndexColumns
+          .map((item) => tempTargetMap.get(item))
+          .filter(Boolean)
+          .map((item) => `${formatSqlIdentifier(item.label.split(" (")[0])} ASC`)
+          .join(", ");
+        tempSqlLines.push("", `CREATE INDEX IX_${tempTableName.replace(/[^A-Za-z0-9_#]+/g, "_").replace(/^#+/, "")}_Auto ON ${tempTableName} (${indexColumns});`);
+      } else {
+        warnings.push("Đánh index cho temp đang bật nhưng chưa chọn cột index.");
+      }
+    }
+
+    let finalSelectOrderParts = orderParts;
+    if (state.sqlPaginationEnabled && paginationOrderTarget) {
+      finalSelectOrderParts = [`${paginationOrderTarget.expression} ASC`];
+      paginationApplied = true;
+    }
+
+    if (finalSelectOrderParts.length) {
+      tempSqlLines.push("", `SELECT * FROM ${tempTableName}`, `ORDER BY ${finalSelectOrderParts.join(",\n  ")}`);
+      if (state.sqlPaginationEnabled && paginationOrderTarget) {
+        tempSqlLines[tempSqlLines.length - 1] += ` OFFSET ${paginationOffset} ROWS FETCH NEXT ${paginationPageSize} ROWS ONLY`;
+      }
+      tempSqlLines[tempSqlLines.length - 1] += ";";
+    } else {
+      tempSqlLines.push("", `SELECT * FROM ${tempTableName};`);
+    }
+
+    finalSqlText = tempSqlLines.join("\n");
+  } else if (state.sqlPaginationEnabled && paginationOrderTarget) {
+    paginationApplied = true;
+    const sqlWithoutOrder = orderParts.length ? sqlLines.slice(0, -1) : [...sqlLines];
+    sqlWithoutOrder.push(`ORDER BY ${paginationOrderTarget.expression} ASC OFFSET ${paginationOffset} ROWS FETCH NEXT ${paginationPageSize} ROWS ONLY`);
+    finalSqlText = sqlWithoutOrder.join("\n");
+  }
+
+  if (state.sqlProcedureMode) {
+    const baseTable = getSqlTable(baseKey);
+    const procName = String(state.sqlProcedureName || "").trim() || getSqlDefaultProcedureName(baseTable?.name || "Query");
+    const procedureHeaderLines = [
+      `CREATE OR ALTER PROCEDURE [dbo].${formatSqlIdentifier(procName)}`
+    ];
+    if (procedureParameterDefinitions.length) {
+      procedureHeaderLines.push(
+        procedureParameterDefinitions
+          .map((item, index) => `${index === 0 ? "  " : "  ,"}@${item.parameterName} ${item.sqlType}`)
+          .join("\n")
+      );
+    }
+    procedureHeaderLines.push("AS");
+    finalSqlText = [
+      ...procedureHeaderLines,
+      "BEGIN",
+      "  SET NOCOUNT ON;",
+      "",
+      ...finalSqlText.split("\n").map((line) => `  ${line}`),
+      "END"
+    ].join("\n");
+  }
+
   return {
     baseKey,
     pathMap,
@@ -2221,11 +2807,17 @@ function getSqlBuilderModel() {
     effectiveGroupByEntries,
     havingTargets,
     orderTargets,
-    sqlText: sqlLines.join("\n"),
+    tempSelectableTargets,
+    sqlText: finalSqlText,
     whereCount: whereParts.length,
     havingCount: havingParts.length,
     orderCount: orderParts.length,
     topValueApplied,
+    paginationApplied,
+    tempTableName,
+    procedureEligibleConditions,
+    selectedProcedureConditionIds,
+    procedureParameterDefinitions,
     warnings
   };
 }
@@ -2311,7 +2903,7 @@ function renderSqlJoinList(model) {
         return;
       }
 
-      state.sqlSelectedTables = uniqueValues([...state.sqlSelectedTables, tableKey]);
+      addSqlSelectedTable(tableKey);
       render();
     });
   }
@@ -2327,6 +2919,8 @@ function renderSqlJoinList(model) {
   els.sqlSelectedJoinList.innerHTML = model.joinEntries.map((join) => {
     const table = join.table;
     const isExplicitJoin = state.sqlSelectedTables.includes(join.tableKey);
+    const isManualJoin = isSqlManualJoinRelation(join.step?.relation);
+    const needsJoinColumnChoice = isExplicitJoin && (isManualJoin || join.relationOptions.length > 1);
     const pathLabel = join.path.length
       ? [getSqlTable(model.baseKey)?.name || model.baseKey, ...join.path.map((step) => getSqlTable(step.toKey)?.name || step.toKey)].join(" -> ")
       : table?.name || join.tableKey;
@@ -2342,6 +2936,7 @@ function renderSqlJoinList(model) {
         <div class="sql-table-card-foot">
           <span class="path-pill">${escapeHtml(join.alias)}</span>
           <span class="path-pill">${escapeHtml(isExplicitJoin ? "Bảng join" : "Bảng trung gian")}</span>
+          ${needsJoinColumnChoice ? `<span class="sql-manual-join-note">Chọn cột để join</span>` : ""}
         </div>
       </article>
     `;
@@ -2350,7 +2945,7 @@ function renderSqlJoinList(model) {
   for (const button of els.sqlSelectedJoinList.querySelectorAll("[data-sql-join-remove]")) {
     button.addEventListener("click", () => {
       const tableKey = button.dataset.sqlJoinRemove || "";
-      state.sqlSelectedTables = state.sqlSelectedTables.filter((item) => item !== tableKey);
+      removeSqlSelectedTable(tableKey);
       render();
     });
   }
@@ -2401,6 +2996,11 @@ function destroySqlColumnTomSelects() {
     instance.destroy();
   }
   sqlJoinColumnTomSelects.clear();
+
+  if (sqlProcedureParameterTomSelect) {
+    sqlProcedureParameterTomSelect.destroy();
+    sqlProcedureParameterTomSelect = null;
+  }
 }
 
 function ensureSqlJoinTomSelect(model) {
@@ -2451,7 +3051,7 @@ function ensureSqlJoinTomSelect(model) {
         return;
       }
 
-      state.sqlSelectedTables = uniqueValues([...state.sqlSelectedTables, value]);
+      addSqlSelectedTable(value);
       sqlJoinTomSelect.clear(true);
       render();
     });
@@ -2569,6 +3169,62 @@ function ensureSqlJoinColumnTomSelect(tableKey) {
   sqlJoinColumnTomSelects.set(tableKey, instance);
 }
 
+function updateSqlProcedureExcludedConditionIds(allConditionIds, selectedIds) {
+  const selectedSet = new Set(selectedIds);
+  state.sqlProcedureExcludedConditionIds = allConditionIds.filter((id) => !selectedSet.has(id));
+}
+
+function ensureSqlProcedureParameterTomSelect(model) {
+  const select = document.getElementById("sqlProcedureParameterSelect");
+  if (!select || typeof window.TomSelect !== "function") {
+    return false;
+  }
+
+  const options = model.procedureEligibleConditions.map((detail) => ({
+    value: detail.condition.id,
+    text: `${detail.table.name}.${detail.column.name} ${detail.operator}`,
+    subtext: detail.condition.value
+      ? `Giá trị mẫu: ${detail.condition.value}`
+      : "Điều kiện không có giá trị mẫu"
+  }));
+
+  sqlProcedureParameterTomSelect = new window.TomSelect(select, {
+    plugins: ["remove_button"],
+    create: false,
+    persist: false,
+    hidePlaceholder: false,
+    closeAfterSelect: true,
+    maxOptions: 300,
+    placeholder: "Gõ tên điều kiện rồi nhấn Enter để thêm tham số",
+    searchField: ["text", "value", "subtext"],
+    valueField: "value",
+    labelField: "text",
+    sortField: [{ field: "text", direction: "asc" }],
+    render: {
+      option(data, escape) {
+        return `<div><strong>${escape(data.text)}</strong><div class="ts-option-subtext">${escape(data.subtext || "")}</div></div>`;
+      },
+      item(data, escape) {
+        return `<div>${escape(data.text)}</div>`;
+      }
+    }
+  });
+
+  sqlProcedureParameterTomSelect.clearOptions();
+  sqlProcedureParameterTomSelect.addOptions(options);
+  sqlProcedureParameterTomSelect.setValue(model.selectedProcedureConditionIds, true);
+  sqlProcedureParameterTomSelect.on("change", (values) => {
+    const selectedIds = Array.isArray(values) ? values : [values].filter(Boolean);
+    updateSqlProcedureExcludedConditionIds(
+      model.procedureEligibleConditions.map((item) => item.condition.id),
+      selectedIds
+    );
+    renderSqlOutput(getSqlBuilderModel());
+  });
+
+  return true;
+}
+
 function bindSqlColumnInteractions(rootElement) {
   if (!rootElement) {
     return;
@@ -2665,6 +3321,36 @@ function renderSqlJoinConfigs(model) {
   els.sqlJoinConfigList.innerHTML = model.joinEntries.map((join) => {
     const table = join.table;
     const isExplicitJoin = state.sqlSelectedTables.includes(join.tableKey);
+    const isManualJoin = isSqlManualJoinRelation(join.step?.relation);
+    const needsJoinColumnChoice = isExplicitJoin && (isManualJoin || join.relationOptions.length > 1);
+    const attachSourceMarkup = isExplicitJoin && join.attachSourceOptions.length
+      ? `
+        <label class="sql-join-route-field">
+          <span>Gắn vào bảng</span>
+          <select data-sql-join-source="${escapeHtml(join.tableKey)}">
+            ${join.attachSourceOptions.map((option) => `
+              <option value="${escapeHtml(option.key)}" ${option.key === join.sourceKey ? "selected" : ""}>
+                ${escapeHtml(option.table?.name || option.key)}
+              </option>
+            `).join("")}
+          </select>
+        </label>
+      `
+      : "";
+    const relationMarkup = isExplicitJoin && join.relationOptions.length
+      ? `
+        <label class="sql-join-route-field">
+          <span>Cột join</span>
+          <select data-sql-join-relation="${escapeHtml(join.tableKey)}">
+            ${join.relationOptions.map((option) => `
+              <option value="${escapeHtml(option.id)}" ${option.id === join.selectedRelationId ? "selected" : ""}>
+                ${escapeHtml(option.label)}
+              </option>
+            `).join("")}
+          </select>
+        </label>
+      `
+      : "";
     const pathLabel = join.path.length
       ? [getSqlTable(model.baseKey)?.name || model.baseKey, ...join.path.map((step) => getSqlTable(step.toKey)?.name || step.toKey)].join(" -> ")
       : table?.name || join.tableKey;
@@ -2683,13 +3369,15 @@ function renderSqlJoinConfigs(model) {
           <div>
             <p class="panel-box-kicker">${escapeHtml(join.alias)}</p>
             <h4>${escapeHtml(table?.name || join.tableKey)}</h4>
-            <p class="meta sql-group-subtitle">${escapeHtml(pathLabel)} | ${escapeHtml(join.step.relation.fromTable)}.${escapeHtml((join.step.relation.fromColumns || []).join(", "))} -> ${escapeHtml(join.step.relation.toTable)}.${escapeHtml((join.step.relation.toColumns || []).join(", "))}</p>
+            <p class="meta sql-group-subtitle">${escapeHtml(pathLabel)} | ${escapeHtml(join.relationLabel)}</p>
+            ${needsJoinColumnChoice ? `<p class="sql-manual-join-note">Chọn cột để join</p>` : ""}
           </div>
           <div class="sql-section-actions">
             ${extraControls}
             ${isExplicitJoin ? `<button class="ghost-btn" type="button" data-sql-join-remove="${escapeHtml(join.tableKey)}">Bỏ bảng</button>` : ""}
           </div>
         </div>
+        ${(attachSourceMarkup || relationMarkup) ? `<div class="sql-join-route-grid">${attachSourceMarkup}${relationMarkup}</div>` : ""}
         <select data-sql-join-column-select="${escapeHtml(join.tableKey)}" multiple placeholder="Gõ tên cột của bảng này rồi nhấn Enter"></select>
         <div class="sql-pill-list">
           ${selectedColumns.length
@@ -2718,10 +3406,52 @@ function renderSqlJoinConfigs(model) {
     }
   }
 
+  for (const select of els.sqlJoinConfigList.querySelectorAll("[data-sql-join-source]")) {
+    select.addEventListener("change", () => {
+      const tableKey = select.dataset.sqlJoinSource || "";
+      if (!tableKey) {
+        return;
+      }
+
+      const sourceKey = select.value || "";
+      if (sourceKey) {
+        state.sqlJoinParentHints[tableKey] = sourceKey;
+        const chosenEdge = chooseSqlJoinEdge(sourceKey, tableKey, "");
+        if (chosenEdge) {
+          state.sqlJoinRelationHints[tableKey] = getSqlRelationStateId(chosenEdge.relation);
+        } else {
+          delete state.sqlJoinRelationHints[tableKey];
+        }
+      } else {
+        delete state.sqlJoinParentHints[tableKey];
+        delete state.sqlJoinRelationHints[tableKey];
+      }
+
+      render();
+    });
+  }
+
+  for (const select of els.sqlJoinConfigList.querySelectorAll("[data-sql-join-relation]")) {
+    select.addEventListener("change", () => {
+      const tableKey = select.dataset.sqlJoinRelation || "";
+      if (!tableKey) {
+        return;
+      }
+
+      const relationId = select.value || "";
+      if (relationId) {
+        state.sqlJoinRelationHints[tableKey] = relationId;
+      } else {
+        delete state.sqlJoinRelationHints[tableKey];
+      }
+      render();
+    });
+  }
+
   for (const button of els.sqlJoinConfigList.querySelectorAll("[data-sql-join-remove]")) {
     button.addEventListener("click", () => {
       const tableKey = button.dataset.sqlJoinRemove || "";
-      state.sqlSelectedTables = state.sqlSelectedTables.filter((item) => item !== tableKey);
+      removeSqlSelectedTable(tableKey);
       render();
     });
   }
@@ -2732,6 +3462,54 @@ function renderSqlSelectOptions(model) {
   els.sqlTopToggle.checked = state.sqlTopEnabled;
   els.sqlTopValueInput.value = state.sqlTopValue;
   els.sqlTopValueInput.disabled = !state.sqlTopEnabled;
+  els.sqlTempTableToggle.checked = state.sqlUseTempTable;
+
+  els.sqlTempConfigList.innerHTML = `
+    ${state.sqlUseTempTable ? `
+      <article class="sql-config-row">
+        <p class="panel-box-kicker">Bảng temp</p>
+        <div class="sql-config-grid sql-config-grid-wide">
+          <input type="text" id="sqlTempTableNameInput" value="${escapeHtml(state.sqlTempTableName)}" placeholder="#TempResult">
+          <label class="sql-toggle-card">
+            <input id="sqlTempIndexToggle" type="checkbox" ${state.sqlTempIndexEnabled ? "checked" : ""}>
+            <span>Đánh index cho temp</span>
+          </label>
+          <span class="path-pill">SELECT INTO ${escapeHtml(state.sqlTempTableName || "#TempResult")}</span>
+          <span class="meta">Bật temp để bọc query hiện tại qua bảng tạm rồi SELECT lại.</span>
+        </div>
+      </article>
+      ${state.sqlTempIndexEnabled ? `
+        <article class="sql-config-row">
+          <p class="panel-box-kicker">Index temp</p>
+          <div class="sql-config-grid sql-config-grid-wide">
+            <select id="sqlTempIndexColumnsSelect" multiple>
+              ${model.tempSelectableTargets.map((target) => `
+                <option value="${escapeHtml(target.stateKey)}" ${state.sqlTempIndexColumns.includes(target.stateKey) ? "selected" : ""}>${escapeHtml(target.label)}</option>
+              `).join("")}
+            </select>
+            <span class="meta">Chọn cột output để tạo index trên temp table.</span>
+          </div>
+        </article>
+      ` : ""}
+    ` : ""}
+    <article class="sql-config-row">
+      <p class="panel-box-kicker">Phân trang</p>
+      <div class="sql-config-grid sql-config-grid-wide">
+        <label class="sql-toggle-card">
+          <input id="sqlPaginationToggle" type="checkbox" ${state.sqlPaginationEnabled ? "checked" : ""}>
+          <span>Bật phân trang</span>
+        </label>
+        <input type="number" id="sqlPaginationPageNumberInput" min="1" step="1" value="${escapeHtml(state.sqlPaginationPageNumber)}" placeholder="Trang" ${state.sqlPaginationEnabled ? "" : "disabled"}>
+        <input type="number" id="sqlPaginationPageSizeInput" min="1" step="1" value="${escapeHtml(state.sqlPaginationPageSize)}" placeholder="Số dòng" ${state.sqlPaginationEnabled ? "" : "disabled"}>
+        <select id="sqlPaginationOrderSelect" ${state.sqlPaginationEnabled ? "" : "disabled"}>
+          ${model.tempSelectableTargets.map((target) => `
+            <option value="${escapeHtml(target.stateKey)}" ${target.stateKey === state.sqlPaginationOrderKey ? "selected" : ""}>${escapeHtml(target.label)}</option>
+          `).join("")}
+        </select>
+        <span class="meta">Phân trang là tính năng độc lập. Hệ thống dùng ORDER BY một cột output theo ASC.</span>
+      </div>
+    </article>
+  `;
 
   const tableAliasMarkup = model.includedKeys.length
     ? model.includedKeys.map((tableKey) => {
@@ -2809,6 +3587,65 @@ function renderSqlSelectOptions(model) {
       } else {
         delete state.sqlColumnAliases[columnKey];
       }
+      render();
+    });
+  }
+
+  const tempTableNameInput = document.getElementById("sqlTempTableNameInput");
+  if (tempTableNameInput) {
+    tempTableNameInput.addEventListener("change", () => {
+      state.sqlTempTableName = tempTableNameInput.value.trim() || "#TempResult";
+      render();
+    });
+  }
+
+  const tempIndexToggle = document.getElementById("sqlTempIndexToggle");
+  if (tempIndexToggle) {
+    tempIndexToggle.addEventListener("change", () => {
+      state.sqlTempIndexEnabled = tempIndexToggle.checked;
+      if (!state.sqlTempIndexEnabled) {
+        state.sqlTempIndexColumns = [];
+      }
+      render();
+    });
+  }
+
+  const paginationToggle = document.getElementById("sqlPaginationToggle");
+  if (paginationToggle) {
+    paginationToggle.addEventListener("change", () => {
+      state.sqlPaginationEnabled = paginationToggle.checked;
+      render();
+    });
+  }
+
+  const tempIndexColumnsSelect = document.getElementById("sqlTempIndexColumnsSelect");
+  if (tempIndexColumnsSelect) {
+    tempIndexColumnsSelect.addEventListener("change", () => {
+      state.sqlTempIndexColumns = Array.from(tempIndexColumnsSelect.selectedOptions).map((option) => option.value);
+      render();
+    });
+  }
+
+  const paginationPageNumberInput = document.getElementById("sqlPaginationPageNumberInput");
+  if (paginationPageNumberInput) {
+    paginationPageNumberInput.addEventListener("input", () => {
+      state.sqlPaginationPageNumber = paginationPageNumberInput.value;
+      renderSqlOutput(getSqlBuilderModel());
+    });
+  }
+
+  const paginationPageSizeInput = document.getElementById("sqlPaginationPageSizeInput");
+  if (paginationPageSizeInput) {
+    paginationPageSizeInput.addEventListener("input", () => {
+      state.sqlPaginationPageSize = paginationPageSizeInput.value;
+      renderSqlOutput(getSqlBuilderModel());
+    });
+  }
+
+  const paginationOrderSelect = document.getElementById("sqlPaginationOrderSelect");
+  if (paginationOrderSelect) {
+    paginationOrderSelect.addEventListener("change", () => {
+      state.sqlPaginationOrderKey = paginationOrderSelect.value || "";
       render();
     });
   }
@@ -3203,15 +4040,78 @@ function renderSqlWhereBuilder(model) {
 }
 
 function renderSqlOutput(model) {
+  if (sqlProcedureParameterTomSelect) {
+    sqlProcedureParameterTomSelect.destroy();
+    sqlProcedureParameterTomSelect = null;
+  }
+
   const baseTable = getSqlTable(model.baseKey);
-  els.sqlPanelTitle.textContent = `SELECT từ ${baseTable?.name || "bảng gốc"}`;
-  els.sqlPanelIntro.textContent = `${model.joinEntries.length} join | ${state.sqlSelectedColumns.length} cột thường | ${model.aggregateItems.length} aggregate | ${model.whereCount} WHERE | ${model.havingCount} HAVING | ${model.orderCount} ORDER BY`;
+  els.sqlPanelTitle.textContent = state.sqlProcedureMode
+    ? `Stored procedure từ ${baseTable?.name || "bảng gốc"}`
+    : `SELECT từ ${baseTable?.name || "bảng gốc"}`;
+  els.sqlPanelIntro.textContent = `${model.joinEntries.length} join | ${state.sqlSelectedColumns.length} cột thường | ${model.aggregateItems.length} aggregate | ${model.whereCount} WHERE | ${model.havingCount} HAVING | ${model.orderCount} ORDER BY${model.paginationApplied ? " | có phân trang" : ""}${state.sqlUseTempTable ? " | dùng temp" : ""}`;
+  els.sqlProcedureModeButton.textContent = state.sqlProcedureMode ? "Trở về SQL thường" : "Tạo thành stored procedure";
+  els.sqlProcedureConfig.innerHTML = state.sqlProcedureMode ? `
+    <article class="sql-config-row">
+      <p class="panel-box-kicker">Stored procedure</p>
+      <div class="sql-config-grid sql-config-grid-compact">
+        <input type="text" id="sqlProcedureNameInput" value="${escapeHtml(state.sqlProcedureName || getSqlDefaultProcedureName(baseTable?.name || "Query"))}" placeholder="sp_Builder_Query">
+        <span class="path-pill sql-procedure-badge">CREATE OR ALTER PROCEDURE</span>
+        <span class="meta">Đang bọc query hiện tại thành stored procedure.</span>
+      </div>
+    </article>
+    <article class="sql-config-row">
+      <p class="panel-box-kicker">Tham số từ điều kiện</p>
+      ${model.procedureEligibleConditions.length ? `
+        <div class="sql-config-grid sql-config-grid-procedure">
+          <div class="sql-procedure-parameter-picker">
+            <select id="sqlProcedureParameterSelect" multiple>
+              ${model.procedureEligibleConditions.map((detail) => `
+                <option value="${escapeHtml(detail.condition.id)}" ${model.selectedProcedureConditionIds.includes(detail.condition.id) ? "selected" : ""}>
+                  ${escapeHtml(detail.table.name)}.${escapeHtml(detail.column.name)} ${escapeHtml(detail.operator)} (${escapeHtml(detail.condition.value || "")})
+                </option>
+              `).join("")}
+            </select>
+          </div>
+          <span class="meta">Mặc định mọi điều kiện nhập giá trị sẽ là tham số. Bạn chỉ bỏ chọn tay những điều kiện không muốn đưa vào stored procedure.</span>
+        </div>
+        <div class="sql-pill-list">
+          ${model.procedureParameterDefinitions.length
+            ? model.procedureParameterDefinitions.map((item) => `<span class="path-pill">@${escapeHtml(item.parameterName)} : ${escapeHtml(item.sqlType)}</span>`).join("")
+            : `<span class="meta">Chưa chọn điều kiện nào làm tham số.</span>`}
+        </div>
+      ` : `<div class="empty">Chưa có điều kiện WHERE kiểu nhập giá trị để map thành tham số.</div>`}
+    </article>
+  ` : "";
   els.sqlBuilderWarnings.innerHTML = model.warnings.length
     ? model.warnings.map((warning) => `<article class="sql-warning-card"><p>${escapeHtml(warning)}</p></article>`).join("")
     : "";
   els.sqlCopyStatus.textContent = state.sqlCopyStatus;
   els.sqlRawWhereInput.value = state.sqlRawWhere;
   els.sqlOutput.value = model.sqlText;
+
+  const sqlProcedureNameInput = document.getElementById("sqlProcedureNameInput");
+  if (sqlProcedureNameInput) {
+    sqlProcedureNameInput.addEventListener("change", () => {
+      state.sqlProcedureName = sqlProcedureNameInput.value.trim();
+      renderSqlOutput(getSqlBuilderModel());
+    });
+  }
+
+  const sqlProcedureParameterSelect = document.getElementById("sqlProcedureParameterSelect");
+  if (sqlProcedureParameterSelect) {
+    const hasTomSelect = ensureSqlProcedureParameterTomSelect(model);
+    if (!hasTomSelect) {
+      sqlProcedureParameterSelect.addEventListener("change", () => {
+        const selectedIds = Array.from(sqlProcedureParameterSelect.selectedOptions).map((option) => option.value);
+        updateSqlProcedureExcludedConditionIds(
+          model.procedureEligibleConditions.map((item) => item.condition.id),
+          selectedIds
+        );
+        renderSqlOutput(getSqlBuilderModel());
+      });
+    }
+  }
 }
 
 function renderSqlBuilder() {
@@ -3225,10 +4125,12 @@ function renderSqlBuilder() {
     els.sqlSelectedJoinList.innerHTML = `<div class="empty">Chưa có dữ liệu bảng từ db.sql.</div>`;
     els.sqlBaseColumnsWrap.innerHTML = `<div class="empty">Chưa có dữ liệu.</div>`;
     els.sqlJoinConfigList.innerHTML = `<div class="empty">Chưa có dữ liệu.</div>`;
+    els.sqlTempConfigList.innerHTML = `<div class="empty">Chưa có dữ liệu.</div>`;
     els.sqlAliasConfigList.innerHTML = `<div class="empty">Chưa có dữ liệu.</div>`;
     els.sqlAggregateList.innerHTML = `<div class="empty">Chưa có dữ liệu.</div>`;
     els.sqlHavingList.innerHTML = `<div class="empty">Chưa có dữ liệu.</div>`;
     els.sqlOrderList.innerHTML = `<div class="empty">Chưa có dữ liệu.</div>`;
+    els.sqlProcedureConfig.innerHTML = "";
     els.sqlBuilderWarnings.innerHTML = "";
     els.sqlWhereList.innerHTML = `<div class="empty">Chưa có dữ liệu.</div>`;
     els.sqlOutput.value = "";
@@ -3450,6 +4352,7 @@ function render() {
   renderOverview();
   renderSearch();
   renderTimeline();
+  renderNoteSubmitState();
   renderFlowList();
   renderFlowModal();
   renderDbClassList();
@@ -3488,7 +4391,7 @@ els.noteSearchInput.addEventListener("input", (event) => {
   render();
 });
 
-els.noteForm.addEventListener("submit", (event) => {
+els.noteForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const title = els.noteTitleInput.value.trim();
@@ -3499,25 +4402,47 @@ els.noteForm.addEventListener("submit", (event) => {
     return;
   }
 
-  state.maintainNotes = [
-    {
-      id: createId("note"),
-      title,
-      date: els.noteDateInput.value || getTodayValue(),
-      area: els.noteAreaSelect.value || "Tổng quát",
-      status: els.noteStatusSelect.value || "Đã xử lý",
-      path: els.notePathInput.value.trim(),
-      issue,
-      fix,
-      tags: tokenizeTags(els.noteTagsInput.value)
-    },
-    ...state.maintainNotes
+  const nextNote = {
+    id: createId("note"),
+    title,
+    date: els.noteDateInput.value || getTodayValue(),
+    area: els.noteAreaSelect.value || "Tổng quát",
+    status: els.noteStatusSelect.value || "Đã xử lý",
+    path: els.notePathInput.value.trim(),
+    issue,
+    fix,
+    tags: tokenizeTags(els.noteTagsInput.value)
+  };
+
+  state.maintainNotesLocal = [
+    nextNote,
+    ...state.maintainNotesLocal
   ].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+  state.maintainNotes = state.maintainNotesRemoteLoaded
+    ? state.maintainNotes
+    : [...state.maintainNotesLocal];
 
   saveMaintainNotes();
-  resetNoteForm();
+  state.noteSubmitting = true;
+  state.noteSubmitStatus = "Đang gửi note lên API...";
+  state.noteSubmitStatusType = "";
   state.currentView = "timeline";
   render();
+
+  try {
+    const apiMessage = await saveMaintainNoteToApi(nextNote);
+    state.noteSubmitStatus = `API: ${apiMessage}`;
+    state.noteSubmitStatusType = "success";
+    resetNoteForm();
+    await fetchMaintainNotesFromApi({ silent: true });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Không gọi được API lưu note.";
+    state.noteSubmitStatus = `Lưu local OK, gọi API lỗi: ${errorMessage}`;
+    state.noteSubmitStatusType = "error";
+  } finally {
+    state.noteSubmitting = false;
+    render();
+  }
 });
 
 els.flowSearchInput.addEventListener("input", (event) => {
@@ -3574,7 +4499,7 @@ els.sqlJoinTableSelect.addEventListener("change", (event) => {
     return;
   }
 
-  state.sqlSelectedTables = uniqueValues([...state.sqlSelectedTables, tableKey]);
+  addSqlSelectedTable(tableKey);
   render();
 });
 
@@ -3596,6 +4521,15 @@ els.sqlTopToggle.addEventListener("change", (event) => {
 els.sqlTopValueInput.addEventListener("input", (event) => {
   state.sqlTopValue = event.target.value;
   renderSqlOutput(getSqlBuilderModel());
+});
+
+els.sqlTempTableToggle.addEventListener("change", (event) => {
+  state.sqlUseTempTable = event.target.checked;
+  if (!state.sqlUseTempTable) {
+    state.sqlTempIndexEnabled = false;
+    state.sqlTempIndexColumns = [];
+  }
+  render();
 });
 
 els.sqlSelectBaseColumnsButton.addEventListener("click", () => {
@@ -3685,6 +4619,15 @@ els.sqlRawWhereInput.addEventListener("input", (event) => {
   renderSqlOutput(getSqlBuilderModel());
 });
 
+els.sqlProcedureModeButton.addEventListener("click", () => {
+  state.sqlProcedureMode = !state.sqlProcedureMode;
+  if (state.sqlProcedureMode && !state.sqlProcedureName.trim()) {
+    const baseTable = getSqlTable(state.sqlBaseTable);
+    state.sqlProcedureName = getSqlDefaultProcedureName(baseTable?.name || "Query");
+  }
+  renderSqlOutput(getSqlBuilderModel());
+});
+
 els.sqlCopyButton.addEventListener("click", async () => {
   const sqlText = els.sqlOutput.value || "";
   if (!sqlText.trim()) {
@@ -3737,3 +4680,4 @@ populateFolderFilter();
 renderSqlBaseOptions();
 ensureSqlBaseTomSelect();
 render();
+fetchMaintainNotesFromApi({ silent: true });

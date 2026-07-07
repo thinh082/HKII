@@ -156,8 +156,9 @@
               </label>
 
               <div class="note-form-actions note-form-span-2">
-                <button class="primary-btn" type="submit">Lưu note</button>
+                <button class="primary-btn" id="noteSubmitButton" type="submit">Lưu note</button>
               </div>
+              <div class="note-form-status note-form-span-2" id="noteSubmitStatus" aria-live="polite"></div>
             </form>
           </div>
 
@@ -334,7 +335,12 @@
                     <span>Dùng TOP</span>
                     <input id="sqlTopValueInput" type="number" min="1" step="1" placeholder="VD: 10">
                   </label>
+                  <label class="sql-toggle-card">
+                    <input id="sqlTempTableToggle" type="checkbox">
+                    <span>Dùng bảng temp</span>
+                  </label>
                 </div>
+                <div class="sql-temp-config-list" id="sqlTempConfigList"></div>
                 <div class="sql-alias-config-list" id="sqlAliasConfigList"></div>
               </section>
 
@@ -388,9 +394,11 @@
                     <h4>Câu SQL</h4>
                   </div>
                   <div class="sql-section-actions">
+                    <button class="ghost-btn" id="sqlProcedureModeButton" type="button">Tạo thành stored procedure</button>
                     <button class="primary-btn" id="sqlCopyButton" type="button">Copy SQL</button>
                   </div>
                 </div>
+                <div class="sql-procedure-config" id="sqlProcedureConfig"></div>
                 <div class="sql-warning-list" id="sqlBuilderWarnings"></div>
                 <p class="meta" id="sqlCopyStatus">Sinh tự động từ bảng và quan hệ trong `db.sql`.</p>
                 <textarea id="sqlOutput" class="sql-output" rows="16" readonly></textarea>
