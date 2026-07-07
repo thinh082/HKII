@@ -1,5 +1,5 @@
 ﻿window.__SQL_SCHEMA__ = {
-    "generatedAt":  "2026-07-06 22:44:49",
+    "generatedAt":  "2026-07-07 11:15:27",
     "source":  "db/db.sql",
     "totalTables":  326,
     "totalRelationships":  374,
@@ -9,6 +9,11 @@
                        "name":  "QL_TruyVetDeNghiCapThuoc",
                        "fullName":  "dbo.QL_TruyVetDeNghiCapThuoc",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPhieuXuat",
                                            "type":  "bigint",
@@ -97,6 +102,11 @@
                        "fullName":  "dbo.DM_Template",
                        "columns":  [
                                        {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MauTemplate",
                                            "type":  "nvarchar(max)",
                                            "nullable":  true
@@ -128,6 +138,11 @@
                        "name":  "QL_HoaDonDo",
                        "fullName":  "dbo.QL_HoaDonDo",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoHD",
                                            "type":  "nvarchar(50)",
@@ -215,6 +230,11 @@
                        "fullName":  "dbo.TTPT_DM_VaiTroTTPT",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "Ma",
                                            "type":  "nvarchar(50)",
                                            "nullable":  false
@@ -253,6 +273,11 @@
                        "fullName":  "dbo.QL_TienLuongToiThieu",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TienLuongToiThieu",
                                            "type":  "float",
                                            "nullable":  true
@@ -270,6 +295,11 @@
                        "name":  "QL_ToaThuoc_CT",
                        "fullName":  "dbo.QL_ToaThuoc_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDToaThuoc",
                                            "type":  "bigint",
@@ -722,6 +752,11 @@
                        "fullName":  "dbo.HT_KhoaSo",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TuNgay",
                                            "type":  "date",
                                            "nullable":  true
@@ -749,6 +784,11 @@
                        "name":  "CLS_DM_NhomXN",
                        "fullName":  "dbo.CLS_DM_NhomXN",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaNhom",
                                            "type":  "nvarchar(50)",
@@ -880,6 +920,11 @@
                        "fullName":  "dbo.QL_GiayHenCLS",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -932,6 +977,11 @@
                        "name":  "DM_NhomChiPhi",
                        "fullName":  "dbo.DM_NhomChiPhi",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaNhom",
                                            "type":  "nvarchar(50)",
@@ -1045,6 +1095,11 @@
                        "fullName":  "dbo.DM_MucDoKhuyetTat",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaMucDo",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -1077,6 +1132,11 @@
                        "name":  "QL_GiayChuyenTuyen",
                        "fullName":  "dbo.QL_GiayChuyenTuyen",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDBenhNhan",
                                            "type":  "bigint",
@@ -1340,6 +1400,11 @@
                        "fullName":  "dbo.HH_DinhViChungLoaiTheoKho",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDKho",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -1376,6 +1441,11 @@
                        "name":  "VB_ProfileDBBenh",
                        "fullName":  "dbo.VB_ProfileDBBenh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "DienBienLamSan",
                                            "type":  "nvarchar(2000)",
@@ -1423,6 +1493,11 @@
                        "name":  "QL_VaoVien",
                        "fullName":  "dbo.QL_VaoVien",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaVaoVien",
                                            "type":  "nvarchar(50)",
@@ -2770,6 +2845,11 @@
                        "fullName":  "dbo.QL_PhieuKhamVaoVien",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -3042,6 +3122,11 @@
                        "fullName":  "dbo.HH_DM_LoaiDonThuoc",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLoaiDonThuoc",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -3083,6 +3168,11 @@
                        "name":  "QL_SuDungTamUngCT",
                        "fullName":  "dbo.QL_SuDungTamUngCT",
                        "columns":  [
+                                       {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IdTU",
                                            "type":  "bigint",
@@ -3140,6 +3230,11 @@
                        "name":  "HT_PhanQuyen",
                        "fullName":  "dbo.HT_PhanQuyen",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDNhanVien",
                                            "type":  "bigint",
@@ -3203,6 +3298,11 @@
                        "fullName":  "dbo.QL_PhieuSinhHieu_CT",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPhieuSinhHieu",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -3249,6 +3349,11 @@
                        "name":  "Vaccine_Profile_CT",
                        "fullName":  "dbo.Vaccine_Profile_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDProfile",
                                            "type":  "bigint",
@@ -3405,6 +3510,11 @@
                        "name":  "HH_PhieuNhapKho",
                        "fullName":  "dbo.HH_PhieuNhapKho",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDNguonNhap",
                                            "type":  "bigint",
@@ -3597,6 +3707,11 @@
                        "fullName":  "dbo.HH_DanhMucNguonSale",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaNguonSale",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -3634,6 +3749,11 @@
                        "name":  "DM_NganHang",
                        "fullName":  "dbo.DM_NganHang",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaNganHang",
                                            "type":  "nvarchar(50)",
@@ -3910,6 +4030,11 @@
                        "fullName":  "dbo.VB_CamKetSuDungDVNgoaiBH",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDBenhNhan",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -3957,6 +4082,11 @@
                        "name":  "QL_PhieuSinhHieu",
                        "fullName":  "dbo.QL_PhieuSinhHieu",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoPhieu",
                                            "type":  "nvarchar(50)",
@@ -4064,6 +4194,11 @@
                        "name":  "IP_NhanVien",
                        "fullName":  "dbo.IP_NhanVien",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "TEN_KHOA",
                                            "type":  "nvarchar(200)",
@@ -4183,6 +4318,11 @@
                        "fullName":  "dbo.QL_PhieuTra_CT",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPhieuTra",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -4245,6 +4385,11 @@
                        "fullName":  "dbo.API_ZL_LoaiChamSoc",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLoaiChamSoc",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -4292,6 +4437,11 @@
                        "fullName":  "dbo.HT_LichPhatThanh",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "NoiDung",
                                            "type":  "nvarchar(max)",
                                            "nullable":  true
@@ -4329,6 +4479,11 @@
                        "name":  "QL_ChiDinh_CT",
                        "fullName":  "dbo.QL_ChiDinh_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDChiDinh",
                                            "type":  "bigint",
@@ -4911,6 +5066,11 @@
                        "fullName":  "dbo.QL_GiayChungSinh",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -5228,6 +5388,11 @@
                        "fullName":  "dbo.DM_TinhCuTru",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaTinh",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -5330,6 +5495,11 @@
                        "fullName":  "dbo.HT_SoCaLamViec",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaCa",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -5357,6 +5527,11 @@
                        "name":  "QL_ChiDinh",
                        "fullName":  "dbo.QL_ChiDinh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoPhieu",
                                            "type":  "nvarchar(50)",
@@ -5599,6 +5774,11 @@
                        "fullName":  "dbo.TTPT_QL_Phieu",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "SoPhieu",
                                            "type":  "nvarchar(100)",
                                            "nullable":  true
@@ -5677,6 +5857,11 @@
                        "fullName":  "dbo.DM_DanToc",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaDanToc",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -5749,6 +5934,11 @@
                        "fullName":  "dbo.CLS_ProfileTQ",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPRF",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -5800,6 +5990,11 @@
                        "name":  "QL_LichSuKhamChuaBenh",
                        "fullName":  "dbo.QL_LichSuKhamChuaBenh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaThe",
                                            "type":  "nvarchar(50)",
@@ -5883,6 +6078,11 @@
                        "name":  "QL_LichSuHuyChungTu",
                        "fullName":  "dbo.QL_LichSuHuyChungTu",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "TenNguoiDangNhapHuy",
                                            "type":  "nvarchar(500)",
@@ -5977,6 +6177,11 @@
                        "fullName":  "dbo.DM_PhuongHuyet",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TenPhuongHuyetTheoBenh",
                                            "type":  "nvarchar(500)",
                                            "nullable":  true
@@ -6004,6 +6209,11 @@
                        "name":  "DM_Vitrichucdanh",
                        "fullName":  "dbo.DM_Vitrichucdanh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "int",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaViTri",
                                            "type":  "int",
@@ -6060,6 +6270,11 @@
                        "name":  "QL_TaiChinh",
                        "fullName":  "dbo.QL_TaiChinh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoChungTu",
                                            "type":  "nvarchar(50)",
@@ -6372,6 +6587,11 @@
                        "fullName":  "dbo.BA_DM_KetQuaGiaiPhauBenh",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "Ma",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -6394,6 +6614,11 @@
                        "name":  "API_ZL_MaLoi",
                        "fullName":  "dbo.API_ZL_MaLoi",
                        "columns":  [
+                                       {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaLoi",
                                            "type":  "int",
@@ -6423,6 +6648,11 @@
                        "fullName":  "dbo.HT_AudioChung",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "NoiDung",
                                            "type":  "nvarchar(max)",
                                            "nullable":  true
@@ -6450,6 +6680,11 @@
                        "name":  "DM_MucHuongBaoHiem",
                        "fullName":  "dbo.DM_MucHuongBaoHiem",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "Ma",
                                            "type":  "nvarchar(50)",
@@ -6536,6 +6771,11 @@
                        "name":  "CLS_PhieuCLS_AnhTam",
                        "fullName":  "dbo.CLS_PhieuCLS_AnhTam",
                        "columns":  [
+                                       {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IdVaoVien",
                                            "type":  "bigint",
@@ -6732,6 +6972,11 @@
                        "name":  "DM_DichVuKyThuat",
                        "fullName":  "dbo.DM_DichVuKyThuat",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDNhomDichVu",
                                            "type":  "bigint",
@@ -7219,6 +7464,11 @@
                        "fullName":  "dbo.HT_ConfigData",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaChucNang",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -7256,6 +7506,11 @@
                        "name":  "QL_GiayHenTaiKham",
                        "fullName":  "dbo.QL_GiayHenTaiKham",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoChungTu",
                                            "type":  "nvarchar(50)",
@@ -7383,6 +7638,11 @@
                        "name":  "HDDT_HoaDon",
                        "fullName":  "dbo.HDDT_HoaDon",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaTraCuu",
                                            "type":  "nvarchar(100)",
@@ -7740,6 +8000,11 @@
                        "fullName":  "dbo.HT_QuyLuatMa",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TenBang",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -7781,6 +8046,11 @@
                        "name":  "QL_History_ThucHien",
                        "fullName":  "dbo.QL_History_ThucHien",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "NgayGioThucHien",
                                            "type":  "datetime",
@@ -7835,6 +8105,11 @@
                        "fullName":  "dbo.DM_KetQuaDieuTri",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaKQDT",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -7868,6 +8143,11 @@
                        "fullName":  "dbo.DM_TinhXaDoiChieu",
                        "columns":  [
                                        {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaXaCu",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -7900,6 +8180,11 @@
                        "name":  "CLS_BenhPham",
                        "fullName":  "dbo.CLS_BenhPham",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDLoaiXN",
                                            "type":  "bigint",
@@ -7942,6 +8227,11 @@
                        "name":  "DM_LoaiThoiGian",
                        "fullName":  "dbo.DM_LoaiThoiGian",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "TenTG",
                                            "type":  "nvarchar(50)",
@@ -7999,6 +8289,11 @@
                        "name":  "CLS_DM_TriSoCLS",
                        "fullName":  "dbo.CLS_DM_TriSoCLS",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaTriSo",
                                            "type":  "nvarchar(50)",
@@ -8066,6 +8361,11 @@
                        "fullName":  "dbo.DM_BanKhamBenh",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaBan",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -8119,6 +8419,11 @@
                        "fullName":  "dbo.HT_DuongDanKySo",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaDuongDan",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -8151,6 +8456,11 @@
                        "name":  "QL_PhieuHoanTra",
                        "fullName":  "dbo.QL_PhieuHoanTra",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoChungTu",
                                            "type":  "nvarchar(50)",
@@ -8269,6 +8579,11 @@
                        "fullName":  "dbo.DM_ToaThuocMau",
                        "columns":  [
                                        {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaToaThuoc",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -8349,6 +8664,11 @@
                        "name":  "QL_PhacDoDVKT_CT",
                        "fullName":  "dbo.QL_PhacDoDVKT_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPhacDo",
                                            "type":  "bigint",
@@ -8447,6 +8767,11 @@
                        "fullName":  "dbo.QL_TruongTrinhTTPT_CD",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPhieuTTPT",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -8488,6 +8813,11 @@
                        "name":  "HH_DM_LoaiKiemSoat",
                        "fullName":  "dbo.HH_DM_LoaiKiemSoat",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaLoaiKiemSoat",
                                            "type":  "nvarchar(20)",
@@ -8561,6 +8891,11 @@
                        "fullName":  "dbo.CSKH_LoaiCSKH",
                        "columns":  [
                                        {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "Ma",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -8631,6 +8966,11 @@
                        "name":  "CLS_LoaiXN",
                        "fullName":  "dbo.CLS_LoaiXN",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaLoaiXN",
                                            "type":  "nvarchar(50)",
@@ -8817,6 +9157,11 @@
                        "fullName":  "dbo.HT_CaiDatThongSoIn",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaChucNang",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -8864,6 +9209,11 @@
                        "name":  "DM_Khoa",
                        "fullName":  "dbo.DM_Khoa",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaKhoa",
                                            "type":  "nvarchar(15)",
@@ -9322,6 +9672,11 @@
                        "fullName":  "dbo.HH_LoaiThau",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLoaiThau",
                                            "type":  "int",
                                            "nullable":  true
@@ -9350,6 +9705,11 @@
                        "fullName":  "dbo.DienThoaiMisa",
                        "columns":  [
                                        {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "DienThoai",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -9367,6 +9727,11 @@
                        "name":  "QL_GiayNghiHuongBHXH",
                        "fullName":  "dbo.QL_GiayNghiHuongBHXH",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoChungTu",
                                            "type":  "nvarchar(50)",
@@ -9650,6 +10015,11 @@
                        "fullName":  "dbo.VB_GiayCamDoanThuThuat",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDBenhNhan",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -9728,6 +10098,11 @@
                        "fullName":  "dbo.CLS_DM_NhomTriSoCLS",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TenNhom",
                                            "type":  "nvarchar(500)",
                                            "nullable":  true
@@ -9804,6 +10179,11 @@
                        "fullName":  "dbo.HT_QuanLySoChungTu",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TenBang",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -9831,6 +10211,11 @@
                        "name":  "DM_ToaThuocMau_CT",
                        "fullName":  "dbo.DM_ToaThuocMau_CT",
                        "columns":  [
+                                       {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IdToaThuocMau",
                                            "type":  "bigint",
@@ -9974,6 +10359,11 @@
                        "fullName":  "dbo.QL_GiayDienBienBenh",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -10100,6 +10490,11 @@
                        "name":  "CLS_PhieuCLS",
                        "fullName":  "dbo.CLS_PhieuCLS",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
@@ -10316,6 +10711,11 @@
                        "name":  "Template_TTPT",
                        "fullName":  "dbo.Template_TTPT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDKhoa",
                                            "type":  "bigint",
@@ -10958,6 +11358,11 @@
                        "fullName":  "dbo.QL_BenhAn",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -11178,6 +11583,11 @@
                        "fullName":  "dbo.QL_LichSuKiemTra",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaThe",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -11215,6 +11625,11 @@
                        "name":  "CLS_DM_TriSoXN",
                        "fullName":  "dbo.CLS_DM_TriSoXN",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDNhomXN",
                                            "type":  "bigint",
@@ -11457,6 +11872,11 @@
                        "fullName":  "dbo.VB_PhieuXacNhanXNHIV",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDBenhNhan",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -11495,6 +11915,11 @@
                        "fullName":  "dbo.HDDT_MauHoaDon",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "LoaiNguonBenh",
                                            "type":  "int",
                                            "nullable":  true
@@ -11527,6 +11952,11 @@
                        "name":  "DM_LoaiGiuong",
                        "fullName":  "dbo.DM_LoaiGiuong",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaLoaiGiuong",
                                            "type":  "nvarchar(50)",
@@ -11580,6 +12010,11 @@
                        "fullName":  "dbo.DM_LyDoVaoNT",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLyDoVaoNT",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -11621,6 +12056,11 @@
                        "name":  "HT_PhanHe",
                        "fullName":  "dbo.HT_PhanHe",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoThuTu",
                                            "type":  "nvarchar(50)",
@@ -11664,6 +12104,11 @@
                        "fullName":  "dbo.HT_MaLanLuuToa",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDBacSiKham",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -11691,6 +12136,11 @@
                        "name":  "ThongTinDoanhNghiep",
                        "fullName":  "dbo.ThongTinDoanhNghiep",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaCSKCB",
                                            "type":  "nvarchar(50)",
@@ -12004,6 +12454,11 @@
                        "fullName":  "dbo.DM_TaiNan",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaTaiNan",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -12055,6 +12510,11 @@
                        "name":  "DM_XaCuTru",
                        "fullName":  "dbo.DM_XaCuTru",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaXa",
                                            "type":  "nvarchar(50)",
@@ -12146,6 +12606,11 @@
                        "name":  "HH_DM_KhoHang",
                        "fullName":  "dbo.HH_DM_KhoHang",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaKhoHang",
                                            "type":  "nvarchar(50)",
@@ -12364,6 +12829,11 @@
                        "fullName":  "dbo.DM_PhuongPhapVoCam",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaPPVC",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -12416,6 +12886,11 @@
                        "fullName":  "dbo.DM_HangHoaXuatHD",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaHang",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -12443,6 +12918,11 @@
                        "name":  "QL_GiayChungNhanThuongTich",
                        "fullName":  "dbo.QL_GiayChungNhanThuongTich",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoChungTu",
                                            "type":  "nvarchar(50)",
@@ -12610,6 +13090,11 @@
                        "name":  "CLS_PhieuXN",
                        "fullName":  "dbo.CLS_PhieuXN",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoPhieu",
                                            "type":  "nvarchar(50)",
@@ -13193,6 +13678,11 @@
                        "fullName":  "dbo.DM_PhoTruongDonVi",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDNhanVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -13270,6 +13760,11 @@
                        "fullName":  "dbo.DM_LyDoXNTL",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLyDo",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -13303,6 +13798,11 @@
                        "fullName":  "dbo.DichTe_BoLoc",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TenBoLoc",
                                            "type":  "nvarchar(200)",
                                            "nullable":  false
@@ -13325,6 +13825,11 @@
                        "name":  "HH_DanhMucNhaCungCap",
                        "fullName":  "dbo.HH_DanhMucNhaCungCap",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaNCC",
                                            "type":  "nvarchar(50)",
@@ -13416,6 +13921,11 @@
                        "name":  "HDDT_MISA_HoaDon_CT",
                        "fullName":  "dbo.HDDT_MISA_HoaDon_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDHDDT",
                                            "type":  "bigint",
@@ -13585,6 +14095,11 @@
                        "fullName":  "dbo.STT_CapSoTheoNgay",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "Ngay",
                                            "type":  "date",
                                            "nullable":  true
@@ -13722,6 +14237,11 @@
                        "fullName":  "dbo.Vaccine_Profile",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDGT",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -13764,6 +14284,11 @@
                        "fullName":  "dbo.HT_KhoaVanBanKy",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TenBang",
                                            "type":  "nvarchar(200)",
                                            "nullable":  true
@@ -13786,6 +14311,11 @@
                        "name":  "QL_KetQuaXML",
                        "fullName":  "dbo.QL_KetQuaXML",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
@@ -13859,6 +14389,11 @@
                        "fullName":  "dbo.TTPT_QL_TrinhTu",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPhieuTTPT",
                                            "type":  "bigint",
                                            "nullable":  false
@@ -13901,6 +14436,11 @@
                        "name":  "IP_MayCLS",
                        "fullName":  "dbo.IP_MayCLS",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "TEN_TB",
                                            "type":  "nvarchar(500)",
@@ -13989,6 +14529,11 @@
                        "name":  "DM_HopDong",
                        "fullName":  "dbo.DM_HopDong",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaHopDong",
                                            "type":  "nvarchar(50)",
@@ -14091,6 +14636,11 @@
                        "fullName":  "dbo.HT_CaiDatKieuIn",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "LoaiTaiChinh",
                                            "type":  "nvarchar(100)",
                                            "nullable":  true
@@ -14123,6 +14673,11 @@
                        "name":  "DM_XangDau",
                        "fullName":  "dbo.DM_XangDau",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaVung1",
                                            "type":  "nvarchar(50)",
@@ -14161,6 +14716,11 @@
                        "name":  "DM_NgheNghiep",
                        "fullName":  "dbo.DM_NgheNghiep",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "Cap1",
                                            "type":  "nvarchar(50)",
@@ -14229,6 +14789,11 @@
                        "fullName":  "dbo.HT_CachTinhGia",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "GioBatDau",
                                            "type":  "time(7)",
                                            "nullable":  true
@@ -14266,6 +14831,11 @@
                        "name":  "DM_PhongBuong",
                        "fullName":  "dbo.DM_PhongBuong",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDKhoa",
                                            "type":  "bigint",
@@ -14687,6 +15257,11 @@
                        "name":  "HH_DM_HangHoa",
                        "fullName":  "dbo.HH_DM_HangHoa",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDNhomHang",
                                            "type":  "bigint",
@@ -15454,6 +16029,11 @@
                        "fullName":  "dbo.DM_MaGiamGia",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaGiamGia",
                                            "type":  "nchar(10)",
                                            "nullable":  true
@@ -15501,6 +16081,11 @@
                        "fullName":  "dbo.DM_DoiTuongPhi_Gia",
                        "columns":  [
                                        {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IdDvkt",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -15528,6 +16113,11 @@
                        "name":  "DM_ChucDanh",
                        "fullName":  "dbo.DM_ChucDanh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaChucDanh",
                                            "type":  "nvarchar(50)",
@@ -15570,6 +16160,11 @@
                        "name":  "HH_DM_HangSanXuat",
                        "fullName":  "dbo.HH_DM_HangSanXuat",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaHSX",
                                            "type":  "nvarchar(50)",
@@ -15637,6 +16232,11 @@
                        "fullName":  "dbo.HT_SoHoaDon",
                        "columns":  [
                                        {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "DoDaiHoaDon",
                                            "type":  "int",
                                            "nullable":  true
@@ -15659,6 +16259,11 @@
                        "name":  "QL_TienSuBenh",
                        "fullName":  "dbo.QL_TienSuBenh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IdVaoVien",
                                            "type":  "bigint",
@@ -15733,6 +16338,11 @@
                        "fullName":  "dbo.HH_DM_NhaThau",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TenNhaThau",
                                            "type":  "nvarchar(1000)",
                                            "nullable":  true
@@ -15769,6 +16379,11 @@
                        "name":  "QL_ThuocDiUng",
                        "fullName":  "dbo.QL_ThuocDiUng",
                        "columns":  [
+                                       {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IdBenhNhan",
                                            "type":  "bigint",
@@ -15836,6 +16451,11 @@
                        "name":  "QL_ChanDoan",
                        "fullName":  "dbo.QL_ChanDoan",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoPhieu",
                                            "type":  "nvarchar(50)",
@@ -16143,6 +16763,11 @@
                        "fullName":  "dbo.HT_Config",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaChucNang",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -16190,6 +16815,11 @@
                        "name":  "DM_NhanVien",
                        "fullName":  "dbo.DM_NhanVien",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaNhanVien",
                                            "type":  "nvarchar(50)",
@@ -17557,6 +18187,11 @@
                        "fullName":  "dbo.HT_LichTruc",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPhongBuong",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -17619,6 +18254,11 @@
                        "fullName":  "dbo.DM_PhuongThucThanhToan",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaPTTT",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -17651,6 +18291,11 @@
                        "name":  "API_ZL_KetQuaZNS",
                        "fullName":  "dbo.API_ZL_KetQuaZNS",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDBenhNhan",
                                            "type":  "bigint",
@@ -17758,6 +18403,11 @@
                        "name":  "QL_ToaThuoc",
                        "fullName":  "dbo.QL_ToaThuoc",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaToaThuoc",
                                            "type":  "nvarchar(7)",
@@ -18105,6 +18755,11 @@
                        "fullName":  "dbo.HT_LichMayCLS",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDNhanVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -18158,6 +18813,11 @@
                        "fullName":  "dbo.QL_GiayBaoTu",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -18210,6 +18870,11 @@
                        "name":  "HH_DM_NhomHang",
                        "fullName":  "dbo.HH_DM_NhomHang",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaNhomHang",
                                            "type":  "nvarchar(50)",
@@ -18392,6 +19057,11 @@
                        "fullName":  "dbo.HH_HinhThucThau",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaHinhThucThau",
                                            "type":  "int",
                                            "nullable":  true
@@ -18419,6 +19089,11 @@
                        "name":  "DM_LoaiDieuTriLao",
                        "fullName":  "dbo.DM_LoaiDieuTriLao",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaDieuTri",
                                            "type":  "nvarchar(50)",
@@ -18452,6 +19127,11 @@
                        "name":  "CLS_PhieuCLS_CT",
                        "fullName":  "dbo.CLS_PhieuCLS_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPhieuCLS",
                                            "type":  "bigint",
@@ -18510,6 +19190,11 @@
                        "fullName":  "dbo.CLS_DuongDanFileCLS",
                        "columns":  [
                                        {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLoaiCLS",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -18558,6 +19243,11 @@
                        "fullName":  "dbo.HH_DM_HoatChat",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TenHoatChat",
                                            "type":  "nvarchar(max)",
                                            "nullable":  true
@@ -18580,6 +19270,11 @@
                        "name":  "DM_KhoGiayIn",
                        "fullName":  "dbo.DM_KhoGiayIn",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "Ten",
                                            "type":  "nvarchar(500)",
@@ -18662,6 +19357,11 @@
                        "fullName":  "dbo.DM_DoiTuongGiamDinh",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaDoiTuong",
                                            "type":  "nvarchar(200)",
                                            "nullable":  true
@@ -18694,6 +19394,11 @@
                        "name":  "QL_PhacDoDieuTri",
                        "fullName":  "dbo.QL_PhacDoDieuTri",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
@@ -18796,6 +19501,11 @@
                        "fullName":  "dbo.HT_ThoiLuongAnToan",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDNhomChiPhi",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -18832,6 +19542,11 @@
                        "name":  "TTPT_QL_Ekip",
                        "fullName":  "dbo.TTPT_QL_Ekip",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPhieuTTPT",
                                            "type":  "bigint",
@@ -18870,6 +19585,11 @@
                        "name":  "HDDT_HoaDon_CT",
                        "fullName":  "dbo.HDDT_HoaDon_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "TChat",
                                            "type":  "int",
@@ -19038,6 +19758,11 @@
                        "fullName":  "dbo.DM_PhamViVTYT",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaPhamVi",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -19070,6 +19795,11 @@
                        "name":  "TTPT_DM_Dropdown",
                        "fullName":  "dbo.TTPT_DM_Dropdown",
                        "columns":  [
+                                       {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "Ma",
                                            "type":  "nvarchar(50)",
@@ -19109,6 +19839,11 @@
                        "fullName":  "dbo.DM_KichCoFilm",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "KichCoFilm",
                                            "type":  "nvarchar(500)",
                                            "nullable":  true
@@ -19131,6 +19866,11 @@
                        "name":  "DM_VanBanKySo",
                        "fullName":  "dbo.DM_VanBanKySo",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaVBKySo",
                                            "type":  "nvarchar(100)",
@@ -19169,6 +19909,11 @@
                        "name":  "Temp_LoiHangHoa",
                        "fullName":  "dbo.Temp_LoiHangHoa",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDKhoHang",
                                            "type":  "bigint",
@@ -19217,6 +19962,11 @@
                        "name":  "DM_GoiChiDinh_CT",
                        "fullName":  "dbo.DM_GoiChiDinh_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoThuTu",
                                            "type":  "int",
@@ -19345,6 +20095,11 @@
                        "fullName":  "dbo.DM_DVKT_SapXepThuTu",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDKhu",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -19402,6 +20157,11 @@
                        "fullName":  "dbo.DM_LoaiBenhNhan",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLBN",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -19443,6 +20203,11 @@
                        "name":  "VB_PhieuTheoDoiChamSoc",
                        "fullName":  "dbo.VB_PhieuTheoDoiChamSoc",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IdVaoVien",
                                            "type":  "bigint",
@@ -19516,6 +20281,11 @@
                        "name":  "DM_GiuongBenh",
                        "fullName":  "dbo.DM_GiuongBenh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPhongBuong",
                                            "type":  "bigint",
@@ -19633,6 +20403,11 @@
                        "fullName":  "dbo.DM_VaiTro",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaVaiTro",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -19690,6 +20465,11 @@
                        "fullName":  "dbo.DM_DoiTuongPhi",
                        "columns":  [
                                        {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TenDoiTuong",
                                            "type":  "nvarchar(max)",
                                            "nullable":  true
@@ -19712,6 +20492,11 @@
                        "name":  "HDDT_MISA_HoaDon",
                        "fullName":  "dbo.HDDT_MISA_HoaDon",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "RefID",
                                            "type":  "nvarchar(50)",
@@ -19959,6 +20744,11 @@
                        "fullName":  "dbo.HT_DanhSachPhatAuDio",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPhongBuong",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -20046,6 +20836,11 @@
                        "fullName":  "dbo.QL_ChanDoan_VaoRa",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -20094,6 +20889,11 @@
                        "fullName":  "dbo.TTPT_AnhTruongTrinh",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPhieuTTPT",
                                            "type":  "bigint",
                                            "nullable":  false
@@ -20126,6 +20926,11 @@
                        "name":  "DM_MarKetting",
                        "fullName":  "dbo.DM_MarKetting",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaMarKetting",
                                            "type":  "nvarchar(50)",
@@ -20168,6 +20973,11 @@
                        "name":  "CLS_FormKQXN",
                        "fullName":  "dbo.CLS_FormKQXN",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "STT",
                                            "type":  "int",
@@ -20300,6 +21110,11 @@
                        "fullName":  "dbo.HH_CachLayGia",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "Ma",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -20327,6 +21142,11 @@
                        "name":  "HH_DanhMucNguonNhapXuat",
                        "fullName":  "dbo.HH_DanhMucNguonNhapXuat",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaNguon",
                                            "type":  "nvarchar(50)",
@@ -20410,6 +21230,11 @@
                        "fullName":  "dbo.HH_CachXuat",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TheoHSD",
                                            "type":  "bit",
                                            "nullable":  true
@@ -20433,6 +21258,11 @@
                        "fullName":  "dbo.BA_DM_LyDoTuVong",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "Ma",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -20455,6 +21285,11 @@
                        "name":  "QL_Vaccine_BN",
                        "fullName":  "dbo.QL_Vaccine_BN",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDBN",
                                            "type":  "bigint",
@@ -20875,6 +21710,11 @@
                        "fullName":  "dbo.HH_DM_DonViTinh",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaDVT",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -21160,6 +22000,11 @@
                        "fullName":  "dbo.HH_LoaiThuoc",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLoaiThuoc",
                                            "type":  "int",
                                            "nullable":  true
@@ -21187,6 +22032,11 @@
                        "name":  "QL_PhieuKhamVaoVienMau",
                        "fullName":  "dbo.QL_PhieuKhamVaoVienMau",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "TenMau",
                                            "type":  "nvarchar(500)",
@@ -21346,6 +22196,11 @@
                        "fullName":  "dbo.DM_QuocGia",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaQuocGia",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -21481,6 +22336,11 @@
                        "fullName":  "dbo.DM_NganHangDoanhNghiep",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDNganHang",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -21522,6 +22382,11 @@
                        "name":  "QL_PhieuTra",
                        "fullName":  "dbo.QL_PhieuTra",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoChungTu",
                                            "type":  "nvarchar(100)",
@@ -21724,6 +22589,11 @@
                        "fullName":  "dbo.API_ZL_Accesstoken",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "Access_token",
                                            "type":  "nvarchar(500)",
                                            "nullable":  true
@@ -21781,6 +22651,11 @@
                        "fullName":  "dbo.HT_ChoKham",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPhong",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -21813,6 +22688,11 @@
                        "name":  "HT_LichLamViecBacSi",
                        "fullName":  "dbo.HT_LichLamViecBacSi",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDNhanVien",
                                            "type":  "bigint",
@@ -21890,6 +22770,11 @@
                        "name":  "QL_DeNghiTraThuoc",
                        "fullName":  "dbo.QL_DeNghiTraThuoc",
                        "columns":  [
+                                       {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoPhieu",
                                            "type":  "nvarchar(50)",
@@ -21997,6 +22882,11 @@
                        "fullName":  "dbo.HH_DM_HangHoa_LoaiKiemSoat",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDHangHoa",
                                            "type":  "bigint",
                                            "nullable":  false
@@ -22059,6 +22949,11 @@
                        "fullName":  "dbo.HT_QuanLyMa",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaQuay",
                                            "type":  "nvarchar(10)",
                                            "nullable":  true
@@ -22105,6 +23000,11 @@
                        "name":  "QL_NoiTru_Giuong_CT",
                        "fullName":  "dbo.QL_NoiTru_Giuong_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDNoiTruGiuong",
                                            "type":  "bigint",
@@ -22358,6 +23258,11 @@
                        "fullName":  "dbo.QL_VaoVien_CT",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -22529,6 +23434,11 @@
                        "fullName":  "dbo.DM_LoaiRaVien",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLoaiRV",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -22562,6 +23472,11 @@
                        "fullName":  "dbo.DM_DangHuongCheDo",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaCheDo",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -22594,6 +23509,11 @@
                        "name":  "HH_DanhMucKhachHang",
                        "fullName":  "dbo.HH_DanhMucKhachHang",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaKhachHang",
                                            "type":  "nvarchar(50)",
@@ -22658,6 +23578,11 @@
                        "fullName":  "dbo.DM_PB_SapXepThuTu",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDKhu",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -22715,6 +23640,11 @@
                        "fullName":  "dbo.DM_PhanLoaiBenhNhan",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaPhanLoai",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -22758,6 +23688,11 @@
                        "fullName":  "dbo.HH_TiLeBanChung",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "CanDuoi",
                                            "type":  "float",
                                            "nullable":  true
@@ -22795,6 +23730,11 @@
                        "name":  "QL_PhacDoThuoc_CT",
                        "fullName":  "dbo.QL_PhacDoThuoc_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPhacDo",
                                            "type":  "bigint",
@@ -22967,6 +23907,11 @@
                        "name":  "HH_TonKhoNhanh",
                        "fullName":  "dbo.HH_TonKhoNhanh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPhieuNhapKho",
                                            "type":  "bigint",
@@ -23160,6 +24105,11 @@
                        "fullName":  "dbo.DM_DangKhuyetTat",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaKhuyetTat",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -23192,6 +24142,11 @@
                        "name":  "DM_NhomDichVuKyThuat",
                        "fullName":  "dbo.DM_NhomDichVuKyThuat",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDLoaiTTPT",
                                            "type":  "bigint",
@@ -23593,6 +24548,11 @@
                        "fullName":  "dbo.CSKH_DinhNghiaThamSo",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaThamSo",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -23655,6 +24615,11 @@
                        "fullName":  "dbo.DM_LyDoDieuTriHIV",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLyDo",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -23688,6 +24653,11 @@
                        "fullName":  "dbo.CLS_TuongQuanXNMayCLS",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDFormKQXN",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -23710,6 +24680,11 @@
                        "name":  "BC_BangCongKhaiThuoc",
                        "fullName":  "dbo.BC_BangCongKhaiThuoc",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
@@ -23832,6 +24807,11 @@
                        "fullName":  "dbo.CLS_PhieuXN_MayCT",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPhieuXN",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -23879,6 +24859,11 @@
                        "name":  "STT_CapSoTheoPhong",
                        "fullName":  "dbo.STT_CapSoTheoPhong",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "Ngay",
                                            "type":  "date",
@@ -24030,6 +25015,11 @@
                        "fullName":  "dbo.HT_ChucNang",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaChucNang",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -24101,6 +25091,11 @@
                        "fullName":  "dbo.DM_MauBenhAn",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDBenhAn",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -24151,6 +25146,11 @@
                        "name":  "QL_MauPhacDoDVKT_CT",
                        "fullName":  "dbo.QL_MauPhacDoDVKT_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDMauPhacDo",
                                            "type":  "bigint",
@@ -24243,6 +25243,11 @@
                        "name":  "QL_TamUng",
                        "fullName":  "dbo.QL_TamUng",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoChungTu",
                                            "type":  "nvarchar(50)",
@@ -24405,6 +25410,11 @@
                        "fullName":  "dbo.CC_DanhMucViTri",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MoTa",
                                            "type":  "nvarchar(500)",
                                            "nullable":  true
@@ -24422,6 +25432,11 @@
                        "name":  "QL_ChanDoan_CT",
                        "fullName":  "dbo.QL_ChanDoan_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDChanDoan",
                                            "type":  "bigint",
@@ -24524,6 +25539,11 @@
                        "name":  "DM_ICD",
                        "fullName":  "dbo.DM_ICD",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaBenh",
                                            "type":  "nvarchar(50)",
@@ -24637,6 +25657,11 @@
                        "fullName":  "dbo.CC_NoiDungVietTat",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDViTri",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -24669,6 +25694,11 @@
                        "name":  "Template_BenhAn",
                        "fullName":  "dbo.Template_BenhAn",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "Ma",
                                            "type":  "nvarchar(200)",
@@ -24737,6 +25767,11 @@
                        "fullName":  "dbo.DM_Loa",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPhongBuong",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -24769,6 +25804,11 @@
                        "name":  "HT_QuyenVaiTro",
                        "fullName":  "dbo.HT_QuyenVaiTro",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDVaiTro",
                                            "type":  "bigint",
@@ -24851,6 +25891,11 @@
                        "name":  "QL_DeNghiCapThuoc",
                        "fullName":  "dbo.QL_DeNghiCapThuoc",
                        "columns":  [
+                                       {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoPhieu",
                                            "type":  "nvarchar(50)",
@@ -24953,6 +25998,11 @@
                        "fullName":  "dbo.HH_DM_DuongDung",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaDuongDung",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -24999,6 +26049,11 @@
                        "name":  "CLS_DM_MayCLS",
                        "fullName":  "dbo.CLS_DM_MayCLS",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaLoaiCLS",
                                            "type":  "nvarchar(50)",
@@ -25196,6 +26251,11 @@
                        "fullName":  "dbo.QL_ChiDinh_NguoiThucHien",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDChiDinhCT",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -25267,6 +26327,11 @@
                        "name":  "TTPT_QL_ThongTin",
                        "fullName":  "dbo.TTPT_QL_ThongTin",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPhieuTTPT",
                                            "type":  "bigint",
@@ -25446,6 +26511,11 @@
                        "fullName":  "dbo.DM_NguonKinhPhi",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaNguon",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -25482,6 +26552,11 @@
                        "name":  "DM_QuanCuTru",
                        "fullName":  "dbo.DM_QuanCuTru",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaQuan",
                                            "type":  "nvarchar(50)",
@@ -25594,6 +26669,11 @@
                        "fullName":  "dbo.QL_HuyHoaDonDo",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -25646,6 +26726,11 @@
                        "fullName":  "dbo.BA_DM_DoiTuongChiTra",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaDoiTuong",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -25668,6 +26753,11 @@
                        "name":  "DM_ViThuocCheBien",
                        "fullName":  "dbo.DM_ViThuocCheBien",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaVTCB",
                                            "type":  "nvarchar(50)",
@@ -25706,6 +26796,11 @@
                        "name":  "DM_BenhAn",
                        "fullName":  "dbo.DM_BenhAn",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaBenhAn",
                                            "type":  "nvarchar(50)",
@@ -25784,6 +26879,11 @@
                        "fullName":  "dbo.CLS_FormKetQuaXNCT",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDForm",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -25841,6 +26941,11 @@
                        "fullName":  "dbo.CLS_PhieuCLS_CTHA",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDPhieuCLS",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -25887,6 +26992,11 @@
                        "name":  "DM_PhuongPhapCheBien",
                        "fullName":  "dbo.DM_PhuongPhapCheBien",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "LoaiPPCB",
                                            "type":  "nvarchar(500)",
@@ -25936,6 +27046,11 @@
                        "fullName":  "dbo.DM_PhacDoDieuTriHIV",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaPhacDo",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -25983,6 +27098,11 @@
                        "name":  "QL_GiayHen",
                        "fullName":  "dbo.QL_GiayHen",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
@@ -26041,6 +27161,11 @@
                        "fullName":  "dbo.QL_PhieuKhamRaVien",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -26084,6 +27209,11 @@
                        "fullName":  "dbo.HT_QuyLuatCode",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "DoDaiMa",
                                            "type":  "int",
                                            "nullable":  true
@@ -26106,6 +27236,11 @@
                        "name":  "HH_DM_NganKe",
                        "fullName":  "dbo.HH_DM_NganKe",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "NganKe",
                                            "type":  "nvarchar(50)",
@@ -26143,6 +27278,11 @@
                        "name":  "DM_HOATCHATTUONGTAC",
                        "fullName":  "dbo.DM_HOATCHATTUONGTAC",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "COCHE",
                                            "type":  "nvarchar(max)",
@@ -26186,6 +27326,11 @@
                        "name":  "HH_PhieuNhapKhoCT",
                        "fullName":  "dbo.HH_PhieuNhapKhoCT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPhieuNhapKho",
                                            "type":  "bigint",
@@ -26342,6 +27487,11 @@
                        "name":  "HH_PhieuXuatKhoCT",
                        "fullName":  "dbo.HH_PhieuXuatKhoCT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPhieuXuatKho",
                                            "type":  "bigint",
@@ -26554,6 +27704,11 @@
                        "fullName":  "dbo.DM_ICD_YHCT",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaBenh",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -26641,6 +27796,11 @@
                        "fullName":  "dbo.DM_NguonThuocChiTra",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaNguonTCT",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -26688,6 +27848,11 @@
                        "fullName":  "dbo.HT_SuKien",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "Ma",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -26725,6 +27890,11 @@
                        "name":  "CLS_ProfileCT",
                        "fullName":  "dbo.CLS_ProfileCT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPRF",
                                            "type":  "bigint",
@@ -26787,6 +27957,11 @@
                        "name":  "CLS_PhieuXNCT",
                        "fullName":  "dbo.CLS_PhieuXNCT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDPhieuXN",
                                            "type":  "bigint",
@@ -26900,6 +28075,11 @@
                        "fullName":  "dbo.HT_TTS_Config",
                        "columns":  [
                                        {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "VoiceId",
                                            "type":  "bigint",
                                            "nullable":  false
@@ -27009,6 +28189,11 @@
                        "fullName":  "dbo.DM_NoiLamViec",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaNLV",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -27065,6 +28250,11 @@
                        "name":  "HT_TTS_VoiceConfig",
                        "fullName":  "dbo.HT_TTS_VoiceConfig",
                        "columns":  [
+                                       {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "VoiceName",
                                            "type":  "nvarchar(50)",
@@ -27303,6 +28493,11 @@
                        "fullName":  "dbo.HH_DinhViKho",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDKhoHang",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -27498,6 +28693,11 @@
                        "fullName":  "dbo.CLS_ConnectXN",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "Host",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -27689,6 +28889,11 @@
                        "fullName":  "dbo.DichTeBoLoc_CT",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDBoLoc",
                                            "type":  "bigint",
                                            "nullable":  false
@@ -27721,6 +28926,11 @@
                        "name":  "DM_PhacDoDieuTriLao",
                        "fullName":  "dbo.DM_PhacDoDieuTriLao",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaPhacDo",
                                            "type":  "nvarchar(50)",
@@ -27759,6 +28969,11 @@
                        "name":  "QL_NoiTru_Giuong",
                        "fullName":  "dbo.QL_NoiTru_Giuong",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
@@ -28006,6 +29221,11 @@
                        "fullName":  "dbo.CLS_TuongQuanXN",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDForm",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -28058,6 +29278,11 @@
                        "fullName":  "dbo.CLS_DM_CongThucTriSo",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "Ten",
                                            "type":  "nvarchar(500)",
                                            "nullable":  true
@@ -28099,6 +29324,11 @@
                        "name":  "QL_TheBHYT",
                        "fullName":  "dbo.QL_TheBHYT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDBN",
                                            "type":  "bigint",
@@ -28406,6 +29636,11 @@
                        "fullName":  "dbo.CLS_Config",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLoaiCLS",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -28489,6 +29724,11 @@
                        "fullName":  "dbo.BC_CotDoanhThu",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "Ten",
                                            "type":  "nvarchar(500)",
                                            "nullable":  true
@@ -28545,6 +29785,11 @@
                        "fullName":  "dbo.BA_DM_LoaiTrucTiepVao",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TenLoai",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -28562,6 +29807,11 @@
                        "name":  "CSKH_Template_CT",
                        "fullName":  "dbo.CSKH_Template_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDLoaiCSKH",
                                            "type":  "bigint",
@@ -28619,6 +29869,11 @@
                        "name":  "DM_BenhNhan",
                        "fullName":  "dbo.DM_BenhNhan",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaBN",
                                            "type":  "nvarchar(50)",
@@ -29231,6 +30486,11 @@
                        "fullName":  "dbo.QL_DeNghiTraThuoc_CT",
                        "columns":  [
                                        {
+                                           "name":  "Id",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IdPhieuDeNghi",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -29288,6 +30548,11 @@
                        "fullName":  "dbo.DM_Khu",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaKhu",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -29344,6 +30609,11 @@
                        "name":  "HH_PhieuXuatKho",
                        "fullName":  "dbo.HH_PhieuXuatKho",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDNguonXuat",
                                            "type":  "bigint",
@@ -29661,6 +30931,11 @@
                        "fullName":  "dbo.CLS_GhiChuXetNghiem",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDBenhNhan",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -29698,6 +30973,11 @@
                        "name":  "CLS_DM_LoaiCLS",
                        "fullName":  "dbo.CLS_DM_LoaiCLS",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaCLS",
                                            "type":  "nvarchar(50)",
@@ -29794,6 +31074,11 @@
                        "name":  "DM_DoiTac",
                        "fullName":  "dbo.DM_DoiTac",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaDoiTac",
                                            "type":  "nvarchar(50)",
@@ -29897,6 +31182,11 @@
                        "fullName":  "dbo.HT_MaMauHienThi",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaMau",
                                            "type":  "nvarchar(200)",
                                            "nullable":  false
@@ -29924,6 +31214,11 @@
                        "name":  "HDDT_TTDN",
                        "fullName":  "dbo.HDDT_TTDN",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MST",
                                            "type":  "nchar(20)",
@@ -30013,6 +31308,11 @@
                        "fullName":  "dbo.STT_DMQuay",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaQuay",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -30055,6 +31355,11 @@
                        "name":  "CLS_Profile",
                        "fullName":  "dbo.CLS_Profile",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "TenPRF",
                                            "type":  "nvarchar(500)",
@@ -30172,6 +31477,11 @@
                        "fullName":  "dbo.HH_MaMau",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "int",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "SLMin",
                                            "type":  "float",
                                            "nullable":  true
@@ -30230,6 +31540,11 @@
                        "fullName":  "dbo.HT_Report",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "int",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaRP",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -30267,6 +31582,11 @@
                        "name":  "QL_BenhAn_ToDieuTri",
                        "fullName":  "dbo.QL_BenhAn_ToDieuTri",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDBenhAn",
                                            "type":  "bigint",
@@ -30306,6 +31626,11 @@
                        "fullName":  "dbo.TTPT_MauTuongTrinh",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaMau",
                                            "type":  "nvarchar(50)",
                                            "nullable":  false
@@ -30343,6 +31668,11 @@
                        "name":  "QL_MauPhacDo",
                        "fullName":  "dbo.QL_MauPhacDo",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaMauPhacDo",
                                            "type":  "nvarchar(50)",
@@ -30411,6 +31741,11 @@
                        "fullName":  "dbo.CLS_BoSuuTapKQXN",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "KetQua",
                                            "type":  "nvarchar(500)",
                                            "nullable":  true
@@ -30428,6 +31763,11 @@
                        "name":  "DM_KhamGiamDinh",
                        "fullName":  "dbo.DM_KhamGiamDinh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaGiamDinh",
                                            "type":  "nvarchar(50)",
@@ -30461,6 +31801,11 @@
                        "name":  "DM_LyDoVaoVien",
                        "fullName":  "dbo.DM_LyDoVaoVien",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaLyDoVV",
                                            "type":  "nvarchar(50)",
@@ -30508,6 +31853,11 @@
                        "name":  "DM_NoiThucHien",
                        "fullName":  "dbo.DM_NoiThucHien",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDNhomDichVu",
                                            "type":  "bigint",
@@ -30560,6 +31910,11 @@
                        "name":  "QL_MauPhacDoThuoc_CT",
                        "fullName":  "dbo.QL_MauPhacDoThuoc_CT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDMauPhacDo",
                                            "type":  "bigint",
@@ -30728,6 +32083,11 @@
                        "fullName":  "dbo.VB_GiayCamDoanTTPT_A4",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "LoaiKCB",
                                            "type":  "int",
                                            "nullable":  true
@@ -30870,6 +32230,11 @@
                        "name":  "DM_TriSoSinhHieu",
                        "fullName":  "dbo.DM_TriSoSinhHieu",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "TenTriSo",
                                            "type":  "nvarchar(50)",
@@ -31066,6 +32431,11 @@
                        "fullName":  "dbo.DM_TinhTrangDenKham",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaTinhTrang",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -31122,6 +32492,11 @@
                                            "name":  "GhiChuTrangThai",
                                            "type":  "nvarchar(max)",
                                            "nullable":  true
+                                       },
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
                                        }
                                    ],
                        "outgoing":  [
@@ -31136,6 +32511,11 @@
                        "name":  "QL_GiayRaVien",
                        "fullName":  "dbo.QL_GiayRaVien",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDVaoVien",
                                            "type":  "bigint",
@@ -31248,6 +32628,11 @@
                        "name":  "QL_TruongTrinhTTPT",
                        "fullName":  "dbo.QL_TruongTrinhTTPT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDChiDinhCT",
                                            "type":  "bigint",
@@ -31518,6 +32903,11 @@
                        "fullName":  "dbo.DM_DoiTuongKCB",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaDoiTuongKCB",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -31546,6 +32936,11 @@
                        "fullName":  "dbo.HH_BoPhanViThuoc",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaBoPhanViThuoc",
                                            "type":  "int",
                                            "nullable":  true
@@ -31573,6 +32968,11 @@
                        "name":  "DM_KhamChuaBenh",
                        "fullName":  "dbo.DM_KhamChuaBenh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaLoaiKCB",
                                            "type":  "nvarchar(50)",
@@ -31689,6 +33089,11 @@
                        "fullName":  "dbo.DM_LoaiPhong",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLoaiPhong",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -31721,6 +33126,11 @@
                        "name":  "DM_GoiChiDinh",
                        "fullName":  "dbo.DM_GoiChiDinh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDHopDong",
                                            "type":  "bigint",
@@ -31848,6 +33258,11 @@
                        "fullName":  "dbo.DM_LoaiThuThuatPhauThuat",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaLoaiTTPT",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -31895,6 +33310,11 @@
                        "fullName":  "dbo.DM_KetQuaXNTL",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaKetQua",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -31938,6 +33358,11 @@
                        "fullName":  "dbo.HH_DanhMucNoiSuDung",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaNoiSuDung",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -31979,6 +33404,11 @@
                        "name":  "HT_LichLamViecKeToan",
                        "fullName":  "dbo.HT_LichLamViecKeToan",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDNhanVien",
                                            "type":  "bigint",
@@ -32041,6 +33471,11 @@
                        "name":  "DM_GioiTinh",
                        "fullName":  "dbo.DM_GioiTinh",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaGioiTinh",
                                            "type":  "nvarchar(50)",
@@ -32179,6 +33614,11 @@
                        "fullName":  "dbo.DM_CSKCB",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "MaCSKCB",
                                            "type":  "nvarchar(50)",
                                            "nullable":  true
@@ -32255,6 +33695,11 @@
                        "name":  "CLS_PhieuXN_May",
                        "fullName":  "dbo.CLS_PhieuXN_May",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "SoPhieu",
                                            "type":  "nvarchar(50)",
@@ -32334,6 +33779,11 @@
                        "fullName":  "dbo.QL_HoaHongDoiTac",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "IDDoiTac",
                                            "type":  "bigint",
                                            "nullable":  true
@@ -32361,6 +33811,11 @@
                        "name":  "BA_DM_TaiBienBienChung",
                        "fullName":  "dbo.BA_DM_TaiBienBienChung",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "Ma",
                                            "type":  "nvarchar(50)",
@@ -32422,6 +33877,11 @@
                        "name":  "QL_TaiChinhCT",
                        "fullName":  "dbo.QL_TaiChinhCT",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "IDTaiChinh",
                                            "type":  "bigint",
@@ -32609,6 +34069,11 @@
                        "fullName":  "dbo.VB_ToDieuTri",
                        "columns":  [
                                        {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
+                                       {
                                            "name":  "TenBenhNhan",
                                            "type":  "nvarchar(100)",
                                            "nullable":  true
@@ -32716,6 +34181,11 @@
                        "name":  "PDF_CaiDatMauIn",
                        "fullName":  "dbo.PDF_CaiDatMauIn",
                        "columns":  [
+                                       {
+                                           "name":  "ID",
+                                           "type":  "bigint",
+                                           "nullable":  false
+                                       },
                                        {
                                            "name":  "MaMauPDF",
                                            "type":  "nvarchar(100)",
